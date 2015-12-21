@@ -3,4 +3,4 @@ PAMPANG的毕业设计。
 
 执行：
 1/ npm i
-2/ supervisor app
+2/ node app
