@@ -1,0 +1,47 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.edit{
+	margin: 3px;
+	padding: 2px 5px;
+	border-radius: 3px;
+	background-color: #f3f3f3;
+	color: #333;
+	font-size: 13px;
+}
+
+.edit:hover{
+	text-decoration: none;
+	background-color: #f00;
+	color: #fff;
+	transition: .2s linear;
+}
+
+.prepage a{
+	float: left;
+	text-decoration: none;
+	padding: .5em 1em;
+	color: #ff0000;
+	font-weight: bold;
+}
+
+.nextpage a{
+	float: right;
+	text-decoration: none;
+	padding: .5em 1em;
+	color: #ff0000;
+	font-weight: bold;
+}
+
+.prepage a:hover, .nextpage a:hover{
+	text-decoration: none;
+	background-color: #f00;
+	color: #f9f9f9;
+	transition: color .2s linear;
+}

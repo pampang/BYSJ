@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Register</title>
+</head>
+<body>
+	<%- include header %>
+	<form method="post">
+		<p><label>用户名：</label><input type="text" name="name"></p>
+		<p><label>密码：</label><input type="password" name="password"></p>
+		<p><label>确认密码：</label><input type="password" name="password-repeat"></p>
+		<p><label>邮箱：</label><input type="email" name="email"></p>
+		<input type="submit" value="注册" />
+	</form>
+	<%- include footer %>
+</body>
+</html>
