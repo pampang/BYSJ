@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>edit</title>
+</head>
+<body>
+	<%- include header %>
+	<form method="post">
+	  <p>
+	  	标题：<br/>
+	  	<input type="text" name="title" value="<%= post.title %>" disabled="disabled" /><br />
+	  </p>
+	  <p>
+	  	标签：<br/>
+	  	<input type="text" name="tag1" value="<%= post.tags[0] %>" disabled="disabled" />
+	  	<input type="text" name="tag2" value="<%= post.tags[1] %>" disabled="disabled" />
+	  	<input type="text" name="tag3" value="<%= post.tags[2] %>" disabled="disabled" />
+	  </p>
+	  <p>
+	  	正文：<br/>
+	  	<textarea name="post" rows="20" cols="100"><%= post.post %></textarea><br />
+	  </p>
+	  <input type="submit" value="保存修改" />
+	</form>
+	<%- include footer %>
+</body>
+</html>

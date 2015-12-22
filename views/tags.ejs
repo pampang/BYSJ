@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>tags</title>
+</head>
+<body>
+	<%- include header %>
+	<% var lastYear = 0 %>
+	<% posts.forEach(function(tag, index) {%>
+		<a href="/tags/<%= tag %>" class="tag"><%= tag %></a>
+	<% }) %>
+	<%- include footer %>
+</body>
+</html>

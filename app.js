@@ -30,7 +30,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 var multer = require('multer');
-console.log(multer);
 app.use(multer({
 	dest: './public/images',
 	rename: function(fieldname, filename) {
