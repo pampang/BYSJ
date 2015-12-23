@@ -1,10 +1,3 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
     <%- include header %>
 
 	<% posts.forEach(function(post, index) { %>
@@ -20,8 +13,7 @@
 		<% }) %>
 	</p>
 	<p><%- post.post %></p>
+	<p class="info">阅读：<%= post.pv %> | 评论：<%= post.comments.length %></p>
 	<% }) %>
 	<%- include paging %>
 	<%- include footer %>
-  </body>
-</html>
