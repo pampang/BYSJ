@@ -32,7 +32,8 @@ Post.prototype.save = function(callback){
 		title: this.title,
 		tags: this.tags,
 		post: this.post,
-		comments: []
+		comments: [],
+		pv: 1
 	};
 
 	// 打开数据库
@@ -159,6 +160,20 @@ Post.getOne = function(name, day, title, callback){
 					return callback(err);
 				}
 				if(doc){
+					// 每访问1次，pv值增加1
+					collection.update({
+						'name': name,
+						'time.day': day,
+						'title': title
+					}, {
+						$inc: {'pv': 1}
+					}, function(err) {
+						mongodb.close();
+						if (err) {
+							callback(err);
+						}
+					});
+					// 解析markdown 为 html
 					doc.post = markdown.toHTML(doc.post);
 					doc.comments.forEach(function (comment) {
 						comment.content = markdown.toHTML(comment.content);
@@ -342,5 +357,36 @@ Post.remove = function (name, day, title, callback) {
 		});
 	});
 }
+
+Post.search = function (keyword, callback) {
+	mongodb.open(function(err, db) {
+		if (err) {
+			return callback(err);
+		}
+		db.collection('posts', function(err, collection) {
+			if (err) {
+				mongodb.close();
+				return callback(err);
+			}
+			var pattern = new RegExp(keyword, 'i');
+			collection.find({
+				'title': pattern
+			}, {
+				'name': 1,
+				'time': 1,
+				'title': 1
+			}).sort({
+				time: -1
+			}).toArray(function(err, docs) {
+				console.log(2);
+				mongodb.close();
+				if (err) {
+					return callback(err);
+				}
+				callback(null, docs);
+			});
+		});
+	});
+};
 
 module.exports = Post;
