@@ -23,4 +23,24 @@ article a:hover{color:#333;text-decoration:underline;}
 .l_head{float:left;margin-left:-4em;box-shadow:0px 1px 4px #888;}
 .r_head{float:right;margin-top:-2.5em;box-shadow:0px 1px 4px #888;}
 
+label{
+	display: inline-block;
+	width: 100px;
+}
 img{max-width: 600px;}
+
+ul{
+	list-style: none;
+}
+input[type="submit"]{
+	width: 50px;
+	height: 30px;
+	border: black 1px solid;
+	border-radius: 5%;
+	font-size: 20px;
+	font-weight: bold;
+	background-color: #efefef;
+}
+input[type="submit"]:hover{
+	background-color:#f00;color:#f9f9f9;-webkit-transition:color .2s linear; border: none;
+}
