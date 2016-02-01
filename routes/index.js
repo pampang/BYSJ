@@ -140,7 +140,7 @@ module.exports = function(app){
 	app.post('/post', function(req, res) {
 		var currentUser = req.session.user,
 			tags = [req.body.tag1, req.body.tag2, req.body.tag3],
-			post = new Post(currentUser.name, req.body.title, tags, req.body.post);
+			post = new Post(currentUser.name, currentUser.head, req.body.title, tags, req.body.post);
 		post.save(function(err){
 			if(err){
 				req.flash('error', err);
@@ -161,6 +161,26 @@ module.exports = function(app){
 		return res.redirect('/');
 	});
 
+	// 实现上传！用这种方法，而不用在app.js中引入0.1.6版本的multer来实现那个傻B功能。 
+	// var multer = require('multer');
+	// var mwMulter1 = multer({ 
+	// 	dest: './public/images',
+	// 	limits: {
+	// 	    fileSize: 100000000
+	// 	}
+	// });
+	// 
+	// 上传的图片存放到dest中，但是我们需要用 'images' + req.file.filename 来引用图片。
+	// 
+	// app.post('/upload', checkLogin);
+	// app.post('/upload', mwMulter1.single('file1'), function(req, res) {
+	// 	console.log(req.file);   //获取文件的信息
+	// 	req.flash('success', '文件上传成功!');
+	// 	console.log('文件上传成功!');
+	// 	return res.redirect('/upload');
+	// });
+
+
 	app.get('/upload', checkLogin);
 	app.get('/upload', function(req, res){
 		res.render('upload', {
@@ -176,6 +196,15 @@ module.exports = function(app){
 		req.flash('success', '文件上传成功!');
 		console.log('文件上传成功!');
 		return res.redirect('/upload');
+	});
+
+	app.get('/links', function (req, res) {
+		res.render('links', {
+			title: '友情链接',
+			user: req.session.user,
+			success: req.flash('success').toString(),
+			error: req.flash('error').toString()
+		});
 	});
 
 	app.get('/search', function(req, res) {
@@ -296,8 +325,12 @@ module.exports = function(app){
 					+ date.getDate() + ' ' 
 					+ date.getHours() + ':' 
 					+ (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
+		var md5 = crypto.createHash('md5'),
+			email_MD5 = md5.update(req.body.email.toLowerCase()).digest('hex'),
+			head = 'http://www.gravatar.com/avatar/' + email_MD5 + '?s=48';
 		var comment = {
 			name: req.body.name,
+			head: head,
 			email: req.body.email,
 			website: req.body.website,
 			time: time,
@@ -376,7 +409,19 @@ module.exports = function(app){
 	});
 
 	app.use(function (req, res) {
-		res.render('404');
+		Post.getArchive(function(err, posts) {
+			if (err) {
+				req.flash('error', err);
+				return res.redirect('/');
+			}
+			res.render('404', {
+				title: '帅到找不到链接！',
+				posts: posts,
+				user: req.session.user,
+				success: req.flash('success').toString(),
+				error: req.flash('error').toString()
+			});
+		});
 	})
 
 	function checkLogin(req, res, next){

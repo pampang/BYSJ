@@ -1,9 +1,32 @@
 	<%- include header %>
-	<form method="post">
-		<p><label>用户名：</label><input type="text" name="name"></p>
-		<p><label>密码：</label><input type="password" name="password"></p>
+	<form method="post" enctype="multipart/form-data">
+		<p><label>用户名：</label><input type="text" name="name" id="name"></p>
+		<p><label>密码：</label><input type="password" name="password" id="password"></p>
 		<p><label>确认密码：</label><input type="password" name="password-repeat"></p>
 		<p><label>邮箱：</label><input type="email" name="email"></p>
-		<input type="submit" value="注册" />
+		<input type="submit" value="注册" id="register"/>
 	</form>
+
+	<script type="text/javascript">
+		$('#register').on('click', function () {
+			var name = $('#name');
+			var password = $('#password');
+			if( name.val().length == 0 ) {
+				alert('用户名都不填，怎么注册啊~');
+				return false;
+			} else if( password.val().length == 0 ){
+				alert('密码都不填，怎么注册啊~');
+				return false;
+			} else if ( name.val().length < 5 ) {
+				alert('用户名不够长~改个大于或等于5位的名字吧~');
+				return false;
+			} else if( password.val().length < 6 ){
+				alert('密码不够长~改个大于或等于6位的密码吧~');
+				return false;
+			}
+			debugger;
+			return false;
+		})
+	</script>
+
 	<%- include footer %>
