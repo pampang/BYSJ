@@ -141,6 +141,7 @@ module.exports = function(app){
 		var currentUser = req.session.user,
 			tags = [req.body.tag1, req.body.tag2, req.body.tag3],
 			post = new Post(currentUser.name, currentUser.head, req.body.title, tags, req.body.post);
+			console.log(req.body.post);
 		post.save(function(err){
 			if(err){
 				req.flash('error', err);
@@ -180,23 +181,36 @@ module.exports = function(app){
 	// 	return res.redirect('/upload');
 	// });
 
-
-	app.get('/upload', checkLogin);
-	app.get('/upload', function(req, res){
-		res.render('upload', {
-			title: '文件上传',
-			user: req.session.user,
-			success: req.flash('success').toString(),
-			error: req.flash('error').toString()
-		});
+	// 创建一个multer实例，以进行上传图片的操作。
+	var multer = require('multer');
+	var imgMulter = multer({
+		dest: 'public/images',
+		limits: {
+			fileSize: 100000000
+		}
+	});
+	app.post('/uploadImg', checkLogin);
+	app.post('/uploadImg', imgMulter.single('img'), function (req, res) {
+		console.log(req.file);
+		res.json({filename: req.file.filename});
 	});
 
-	app.post('/upload', checkLogin);
-	app.post('/upload', function(req, res) {
-		req.flash('success', '文件上传成功!');
-		console.log('文件上传成功!');
-		return res.redirect('/upload');
-	});
+	// app.get('/upload', checkLogin);
+	// app.get('/upload', function(req, res){
+	// 	res.render('upload', {
+	// 		title: '文件上传',
+	// 		user: req.session.user,
+	// 		success: req.flash('success').toString(),
+	// 		error: req.flash('error').toString()
+	// 	});
+	// });
+
+	// app.post('/upload', checkLogin);
+	// app.post('/upload', function(req, res) {
+	// 	req.flash('success', '文件上传成功!');
+	// 	console.log('文件上传成功!');
+	// 	return res.redirect('/upload');
+	// });
 
 	app.get('/links', function (req, res) {
 		res.render('links', {

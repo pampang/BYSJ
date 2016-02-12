@@ -2,7 +2,48 @@
 	<form method="post">
 		<p>标题: <input type="text" name="title"></p>
 		<p>标签: <input type="text" name="tag1"><input type="text" name="tag2"><input type="text" name="tag3"></p>
-		<p>正文: <textarea name="post" rows="20" cols="100"></textarea></p>
-		<input type="submit" value="发表" />
+		<p>正文: 
+		<textarea name="post" rows="20" cols="100"></textarea></p>
+		<input type="submit" value="发表" class="submit"/>
 	</form>
+	<form id="uploadImg" method="post" action="/uploadImg" enctype="multipart/form-data">
+		<input type="file" name="img" value="选择图片" />
+		<input type="submit" value="添加图片"/>
+	</form>
+	
+	<script type="text/javascript" src="/js/jquery.form.min.js"></script>
+	<script type="text/javascript">
+
+		var options = { 
+	       // target:        '#output',   // target element(s) to be updated with server response 
+	        success:   addImg,  // post-submit callback
+			resetForm: true
+	        // other available options: 
+	        //url:       url         // override for form's 'action' attribute 
+	        //type:      type        // 'get' or 'post', override for form's 'method' attribute 
+	        //dataType:  null        // 'xml', 'script', or 'json' (expected server response type) 
+	        //clearForm: true        // clear all form fields after successful submit 
+	        //resetForm: true        // reset the form after successful submit 
+	 
+	        // $.ajax options can be used here too, for example: 
+	        //timeout:   3000 
+	    }; 
+
+		$('#uploadImg').submit(function() { 
+		    // inside event callbacks 'this' is the DOM element so we first 
+		    // wrap it in a jQuery object and then invoke ajaxSubmit 
+		    $(this).ajaxSubmit(options);
+		
+		    // !!! Important !!! 
+		    // always return false to prevent standard browser submit and page navigation 
+		    return false; 
+		});
+
+		function addImg (response) {
+			var textarea = $(window.frames[0].document).find('.ke-content');
+
+			var html = textarea.html() + '<p><img style="width:80%;" src="/images/'+response.filename+ '"/></p>';
+			textarea.html( html );
+		}
+	</script>
 	<%- include footer %>

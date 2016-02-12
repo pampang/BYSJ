@@ -32,7 +32,7 @@ img{max-width: 600px;}
 ul{
 	list-style: none;
 }
-input[type="submit"]{
+.submit{
 	width: 50px;
 	height: 30px;
 	border: black 1px solid;
@@ -41,6 +41,25 @@ input[type="submit"]{
 	font-weight: bold;
 	background-color: #efefef;
 }
-input[type="submit"]:hover{
+.submit:hover{
 	background-color:#f00;color:#f9f9f9;-webkit-transition:color .2s linear; border: none;
+}
+
+.ke-content img{
+	width: 80%;
+}
+
+#uploadImg{
+	display: block;
+	overflow: hidden;
+	float: right;
+	margin-top: -375px;
+}
+
+#uploadImg input{
+	float: left;
+}
+
+.ke-container{
+	width: 600px !important;
 }
