@@ -1,15 +1,17 @@
 	<%- include header %>
 	<form method="post">
 		<p>标题: <input type="text" name="title"></p>
-		<p>标签: <input type="text" name="tag1"><input type="text" name="tag2"><input type="text" name="tag3"></p>
+		<p>标签: <input type="text" class="tagInput" name="tag1"><input type="text" class="tagInput" name="tag2"><input type="text" class="tagInput" name="tag3"></p>
 		<p>正文: 
 		<textarea name="post" rows="20" cols="100"></textarea></p>
 		<input type="submit" value="发表" class="submit"/>
 	</form>
-	<form id="uploadImg" method="post" action="/uploadImg" enctype="multipart/form-data">
-		<input type="file" name="img" value="选择图片" />
-		<input type="submit" value="添加图片"/>
-	</form>
+	<div class="addImg">
+		<p class="addImgBtn">添加图片</p>
+		<form id="uploadImg" method="post" action="/uploadImg" enctype="multipart/form-data">
+			<input type="file" id="img" name="img" />
+		</form>
+	</div>
 	
 	<script type="text/javascript" src="/js/jquery.form.min.js"></script>
 	<script type="text/javascript">
@@ -29,15 +31,19 @@
 	        //timeout:   3000 
 	    }; 
 
-		$('#uploadImg').submit(function() { 
-		    // inside event callbacks 'this' is the DOM element so we first 
-		    // wrap it in a jQuery object and then invoke ajaxSubmit 
-		    $(this).ajaxSubmit(options);
+		// $('#uploadImg').submit(function() { 
+		//     // inside event callbacks 'this' is the DOM element so we first 
+		//     // wrap it in a jQuery object and then invoke ajaxSubmit 
+		//     $(this).ajaxSubmit(options);
 		
-		    // !!! Important !!! 
-		    // always return false to prevent standard browser submit and page navigation 
-		    return false; 
-		});
+		//     // !!! Important !!! 
+		//     // always return false to prevent standard browser submit and page navigation 
+		//     return false; 
+		// });
+
+		$('#img').on('change', function () {
+			$('#uploadImg').ajaxSubmit(options);
+		})
 
 		function addImg (response) {
 			var textarea = $(window.frames[0].document).find('.ke-content');
