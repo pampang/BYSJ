@@ -24,6 +24,15 @@
 
 	<header>
 	<h1><%= title %></h1>
+	<% if (user) { %>
+	<div class="profile">
+		<p>
+			欢迎您，
+			<a href="/profile"><%= user.name %></a>
+			<a href="/pwd">修改密码</a>
+		</p>
+	</div>
+	<% } %>
 	</header>
 
 	<nav>
@@ -45,6 +54,10 @@
 			</form>
 		</span>
 	</nav>
+
+	
+	
+	
 
 	<article>
 

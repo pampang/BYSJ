@@ -1,5 +1,5 @@
 	<%- include header %>
-	<form method="post" enctype="multipart/form-data">
+	<form method="post">
 		<p><label>用户名：</label><input type="text" name="name" id="name"></p>
 		<p><label>密码：</label><input type="password" name="password" id="password"></p>
 		<p><label>确认密码：</label><input type="password" name="password-repeat"></p>
@@ -24,8 +24,6 @@
 				alert('密码不够长~改个大于或等于6位的密码吧~');
 				return false;
 			}
-			debugger;
-			return false;
 		})
 	</script>
 
