@@ -1,14 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset=utf-8>
-	<meta name=description content="404 page">
-	<meta name=viewport content="width=device-width, initial-scale=1">
-	<title></title>
-</head>
-<body>
-<h3>
-	帅到找不到链接！
-</h3>
-</body>
-</html>
+	<%- include header %>
+	
+	<h3 style="color: green;">先看看其他文章吧~</h3>
+
+	<ul class="archive">
+	<% var lastYear = 0 %>
+	<% posts.forEach(function(post, index) {%>
+		<% if(lastYear != post.time.year) { %>
+			<li><h3><%= post.time.year %></h3></li>
+		<% lastYear = post.time.year; } %>
+		<li><time><%= post.time.day %></time></li>
+		<li><a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a></li>
+	<% }) %>
+	</ul>
+
+	<%- include footer %>

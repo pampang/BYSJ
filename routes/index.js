@@ -4,6 +4,7 @@ var router = express.Router();
 var crypto = require('crypto'),
 	User = require('../models/user.js'),
 	Post = require('../models/post.js'),
+	Msg = require('../models/Msg.js'),
 	Comment = require('../models/comment.js');
 
 module.exports = function(app){
@@ -41,51 +42,39 @@ module.exports = function(app){
 	});
 
 	app.post('/reg', checkNotLogin);
-	app.post('/reg', function(req, res) {
+	app.post('/reg', function (req, res) {
 		var name = req.body.name,
-			password = req.body.password,
-			password_re = req.body['password-repeat'];
-
-		// 检验用户两次输入的密码是否一致
-		if(password_re != password){
-			req.flash('error', '两次输入的密码不一致！');
-			console.log('两次输入的密码不一致！');
-			return res.redirect('/reg');
+		    password = req.body.password,
+		    password_re = req.body['password-repeat'];
+		//检验用户两次输入的密码是否一致
+		if (password_re != password) {
+		  req.flash('error', '两次输入的密码不一致!'); 
+		  return res.redirect('/reg');//返回主册页
 		}
-
-		// 生成密码的md5值
+		//生成密码的 md5 值
 		var md5 = crypto.createHash('md5'),
-			password = md5.update(req.body.password).digest('hex');
-
+		    password = md5.update(req.body.password).digest('hex');
 		var newUser = new User({
-			name: req.body.name,
-			password: password,
-			email: req.body.email
+		    name: req.body.name,
+		    password: password,
+		    email: req.body.email
 		});
-
-		// 检查用户名是否已经存在
-		User.get(newUser.name, function(err, user){
-			if(err){
-				req.flash('error', err);
-				return res.redirect('/');
-			}
-			if(user){
-				req.flash('error', '用户已存在！');
-				console.log('用户已存在！');
-				return res.redirect('/reg');
-			}
-
-			// 如果不存在则新增用户
-			newUser.save(function(err, user){
-				if(err){
-					req.flash('error', err);
-					return res.redirect('/reg');
-				}
-				req.session.user = user; // 用户信息存入session
-				req.flash('success', '注册成功！');
-				console.log('注册成功！');
-				res.redirect('/');  // 注册成功后返回主页
-			});
+		//检查用户名是否已经存在 
+		User.get(newUser.name, function (err, user) {
+		  if (user) {
+		    req.flash('error', '用户已存在!');
+		    return res.redirect('/reg');//返回注册页
+		  }
+		  //如果不存在则新增用户
+		  newUser.save(function (err, user) {
+		    if (err) {
+		      req.flash('error', err);
+		      return res.redirect('/reg');//注册失败返回主册页
+		    }
+		    req.session.user = user;//用户信息存入 session
+		    req.flash('success', '注册成功!');
+		    res.redirect('/');//注册成功后返回主页
+		  });
 		});
 	});
 
@@ -125,22 +114,110 @@ module.exports = function(app){
 		});
 	});
 
+	app.get('/profile', checkLogin);
+	app.get('/profile', function (req, res) {
+		res.render('profile', {
+			title: '个人资料',
+			user: req.session.user,
+			success: req.flash('success').toString(),
+			error: req.flash('error').toString()
+		})
+	});
+
+	app.post('/profile', checkLogin);
+	app.post('/profile', function (req, res) {
+
+		var currentUser = req.session.user,
+			nickname = req.body.nickname,
+			sex = req.body.sex,
+			age = req.body.age,
+			phone = req.body.phone,
+			province = req.body.province,
+			city = req.body.city,
+			district = req.body.district;
+		console.log(currentUser.name);
+		User.update(currentUser.name, nickname, sex, age, phone, province, city, district, function(err, user){
+			if(err){
+				req.flash('error', err);
+				return res.redirect('/');
+			}
+			req.session.user = user;
+			req.flash('success', '修改成功!');
+			console.log('修改成功!');
+			res.redirect('/profile'); //成功！返回文章页
+		});
+	})
+
+	app.get('/pwd', checkLogin);
+	app.get('/pwd', function (req, res) {
+		res.render('pwd', {
+			title: '修改密码',
+			user: req.session.user,
+			success: req.flash('success').toString(),
+			error: req.flash('error').toString()
+		})
+	})
+
+	app.post('/pwd', checkLogin);
+	app.post('/pwd', function (req, res) {
+
+		var currentUser = req.session.user,
+		    password = req.body.password,
+		    password_old = req.body['password_old'],
+		    password_re = req.body['password-repeat'];
+		//检验用户两次输入的密码是否一致
+		if (password_re != password) {
+		  req.flash('error', '两次输入的密码不一致!'); 
+		  return res.redirect('/pwd');//返回主册页
+		}
+
+		//生成密码的 md5 值
+		var md5 = crypto.createHash('md5'),
+		    password = md5.update(password).digest('hex');
+
+		var md5 = crypto.createHash('md5'),
+		    password_old = md5.update(password_old).digest('hex');
+		
+	    User.get(currentUser.name, function(err, user){
+	    	if(!user){
+	    		req.flash('error', '用户不存在！');
+	    		console.log('用户不存在！');
+	    		return res.redirect('/');
+	    	}
+	    	if(user.password != password_old) {
+	    		req.flash('error', '旧密码错误！');
+	    		return res.redirect('/pwd');
+	    	}
+	    });
+
+		User.updatePwd(currentUser.name, password, function(err){
+			if(err){
+				req.flash('error', '修改密码失败！');
+				return res.redirect('/');
+			}
+			req.flash('success', '修改成功!');
+			console.log('修改成功!');
+			res.redirect('/'); //成功！返回主页
+		});
+	})
+
 	// setting /post
 	app.get('/post', checkLogin);
 	app.get('/post', function(req, res) {
 		res.render('post', { 
-			title: '发表',
+			title: '发表文章',
 			user: req.session.user,
 			success: req.flash('success').toString(),
-			error: req.flash('error').toString(),
+			error: req.flash('error').toString()
 		});
 	});
 
 	app.post('/post', checkLogin);
 	app.post('/post', function(req, res) {
-		var currentUser = req.session.user,
+		var type = 0,
+			currentUser = req.session.user,
 			tags = [req.body.tag1, req.body.tag2, req.body.tag3],
-			post = new Post(currentUser.name, req.body.title, tags, req.body.post);
+			post = new Post(type, currentUser.name, currentUser.head, req.body.title, tags, req.body.post);
 		post.save(function(err){
 			if(err){
 				req.flash('error', err);
@@ -152,6 +229,38 @@ module.exports = function(app){
 		});
 	});
 
+	// setting /activity
+	app.get('/activity', checkLogin);
+	app.get('/activity', function(req, res) {
+		res.render('activity', { 
+			title: '发表活动',
+			user: req.session.user,
+			success: req.flash('success').toString(),
+			error: req.flash('error').toString()
+		});
+	});
+
+	app.post('/activity', checkLogin);
+	app.post('/activity', function(req, res) {
+		var currentUser = req.session.user,
+			type = 1,
+			// startTime = req.body.startTime,
+			// endTime = req.body.endTime,
+			// count = req.body.count,
+			tags = [req.body.tag1, req.body.tag2, req.body.tag3],
+			post = new Post(type, currentUser.name, currentUser.head, req.body.title, tags, req.body.post, req.body.count, req.body.startTime, req.body.endTime, req.body.province, req.body.city, req.body.district, req.body.detail);
+		post.save(function(err){
+			if(err){
+				req.flash('error', err);
+				return res.redirect('/');
+			}
+			req.flash('success', '发布成功！');
+			console.log('发布成功！');
+			res.redirect('/');
+		});
+	});
+
+
 	// setting /logout
 	app.get('/logout', checkLogin);
 	app.get('/logout', function(req, res) {
@@ -161,21 +270,63 @@ module.exports = function(app){
 		return res.redirect('/');
 	});
 
-	app.get('/upload', checkLogin);
-	app.get('/upload', function(req, res){
-		res.render('upload', {
-			title: '文件上传',
+	// 实现上传！用这种方法，而不用在app.js中引入0.1.6版本的multer来实现那个傻B功能。 
+	// var multer = require('multer');
+	// var mwMulter1 = multer({ 
+	// 	dest: './public/images',
+	// 	limits: {
+	// 	    fileSize: 100000000
+	// 	}
+	// });
+	// 
+	// 上传的图片存放到dest中，但是我们需要用 'images' + req.file.filename 来引用图片。
+	// 
+	// app.post('/upload', checkLogin);
+	// app.post('/upload', mwMulter1.single('file1'), function(req, res) {
+	// 	console.log(req.file);   //获取文件的信息
+	// 	req.flash('success', '文件上传成功!');
+	// 	console.log('文件上传成功!');
+	// 	return res.redirect('/upload');
+	// });
+
+	// 创建一个multer实例，以进行上传图片的操作。
+	var multer = require('multer');
+	var imgMulter = multer({
+		dest: 'public/images',
+		limits: {
+			fileSize: 100000000
+		}
+	});
+	app.post('/uploadImg', checkLogin);
+	app.post('/uploadImg', imgMulter.single('img'), function (req, res) {
+		console.log(req.file);
+		res.json({filename: req.file.filename});
+	});
+
+	// app.get('/upload', checkLogin);
+	// app.get('/upload', function(req, res){
+	// 	res.render('upload', {
+	// 		title: '文件上传',
+	// 		user: req.session.user,
+	// 		success: req.flash('success').toString(),
+	// 		error: req.flash('error').toString()
+	// 	});
+	// });
+
+	// app.post('/upload', checkLogin);
+	// app.post('/upload', function(req, res) {
+	// 	req.flash('success', '文件上传成功!');
+	// 	console.log('文件上传成功!');
+	// 	return res.redirect('/upload');
+	// });
+
+	app.get('/links', function (req, res) {
+		res.render('links', {
+			title: '友情链接',
 			user: req.session.user,
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
-	});
-
-	app.post('/upload', checkLogin);
-	app.post('/upload', function(req, res) {
-		req.flash('success', '文件上传成功!');
-		console.log('文件上传成功!');
-		return res.redirect('/upload');
 	});
 
 	app.get('/search', function(req, res) {
@@ -278,14 +429,26 @@ module.exports = function(app){
 				req.flash('error', err);
 				return res.redirect('/');
 			}
-			console.log('post', post);
-			res.render('article', {
-				title: req.params.title,
-				post: post,
-				user: req.session.user,
-				success: req.flash('success').toString(),
-				error: req.flash('error').toString()
-			});
+			if( post.type == 0 ) {
+				res.render('article_post', {
+					title: req.params.title,
+					post: post,
+					user: req.session.user,
+					success: req.flash('success').toString(),
+					error: req.flash('error').toString()
+				});
+				return;
+			};
+			if( post.type == 1 ) {
+				res.render('article_activity', {
+					title: req.params.title,
+					post: post,
+					user: req.session.user,
+					success: req.flash('success').toString(),
+					error: req.flash('error').toString()
+				});
+				return;
+			}
 		});
 	});
 
@@ -296,8 +459,12 @@ module.exports = function(app){
 					+ date.getDate() + ' ' 
 					+ date.getHours() + ':' 
 					+ (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
+		var md5 = crypto.createHash('md5'),
+			email_MD5 = md5.update(req.body.email.toLowerCase()).digest('hex'),
+			head = 'http://www.gravatar.com/avatar/' + email_MD5 + '?s=48';
 		var comment = {
 			name: req.body.name,
+			head: head,
 			email: req.body.email,
 			website: req.body.website,
 			time: time,
@@ -314,6 +481,19 @@ module.exports = function(app){
 			res.redirect('back');
 		});
 	});
+
+	app.put('/u/:name/:day/:title', checkLogin);
+	app.put('/u/:name/:day/:title', function (req, res) {
+		var currentUser = req.session.user;
+		var name = req.params.name;
+		Post.joinActivity(req.params.name, req.params.day, req.params.title, currentUser.name, function (err) {
+			if (err) {
+				req.flash('error', err);
+				return res.redirect('back');
+			}
+		})
+		res.json({success: 1});
+	})
 
 	app.get('/edit/:name/:day/:title', checkLogin);
 	app.get('/edit/:name/:day/:title', function(req, res){
@@ -336,29 +516,58 @@ module.exports = function(app){
 				req.flash('error', err);
 				return res.redirect('back');
 			}
-			res.render('edit', {
-				title: '编辑',
-				post: post,
-				user: req.session.user,
-				success: req.flash('success').toString(),
-				error: req.flash('error').toString()
-			});
+			if( post.type == 0 ) {
+				res.render('edit_post', {
+					title: '编辑',
+					post: post,
+					user: req.session.user,
+					success: req.flash('success').toString(),
+					error: req.flash('error').toString()
+				});
+				return;
+			}
+			if( post.type == 1 ) {
+				res.render('edit_activity', {
+					title: '编辑',
+					post: post,
+					user: req.session.user,
+					success: req.flash('success').toString(),
+					error: req.flash('error').toString()
+				});
+			}
 		});
 	});
 
 	app.post('/edit/:name/:day/:title', checkLogin);
 	app.post('/edit/:name/:day/:title', function(req, res) {
-		var currentUser = req.session.user;
-		Post.update(currentUser.name, req.params.day, req.params.title, req.body.post, function(err) {
-			var url = encodeURI('/u/' + req.params.name + '/' + req.params.day + '/' + req.params.title);
-			if (err) {
-				req.flash('error', err);
-				return res.redirect(url); //出错则跳转回文章页
-			}
-			req.flash('success', '修改成功!');
-			console.log('修改成功!');
-			res.redirect(url); //成功！返回文章页
-		});
+		var currentUser = req.session.user,
+			tags = [req.body.tag1, req.body.tag2, req.body.tag3];
+		if( req.body.type == 0 ) {
+			Post.update(currentUser.name, req.params.day, req.params.title, tags, req.body.post, function(err) {
+				var url = encodeURI('/u/' + req.params.name + '/' + req.params.day + '/' + req.params.title);
+				if (err) {
+					req.flash('error', err);
+					return res.redirect(url); //出错则跳转回文章页
+				}
+				req.flash('success', '修改成功!');
+				console.log('修改成功!');
+				res.redirect(url); //成功！返回文章页
+			});
+			return;
+		}
+		if( req.body.type == 1 ) {
+			Post.updateActivity(currentUser.name, req.params.day, req.params.title, tags, req.body.post, req.body.startTime, req.body.endTime, req.body.province, req.body.city, req.body.district, req.body.detail, function(err) {
+				var url = encodeURI('/u/' + req.params.name + '/' + req.params.day + '/' + req.params.title);
+				if (err) {
+					req.flash('error', err);
+					return res.redirect(url); //出错则跳转回文章页
+				}
+				req.flash('success', '修改成功!');
+				console.log('修改成功!');
+				res.redirect(url); //成功！返回文章页
+			});
+			return;
+		}
 	});
 
 	app.get('/remove/:name/:day/:title', checkLogin);
@@ -375,8 +584,87 @@ module.exports = function(app){
 		});
 	});
 
+	app.get('/msg', checkLogin);
+	app.get('/msg', function (req, res) {
+
+		// 判断是否是第一页，并把请求的页数转换成Number类型
+		var page = req.query.p ? parseInt(req.query.p) : 1;
+		// 查询并返回第page页的10篇文章
+		Msg.getTen(req.session.user.name, page, function(err, msgs, total) {
+			if (err) {
+				msgs = [];
+			}
+			res.render('msg', {
+				title: '我的消息',
+				user: req.session.user,
+				msgs: msgs,
+				page: page,
+				isFirstPage: (page - 1) == 0,
+				isLastPage: ((page - 1) * 10 + msgs.length) == total,
+				success: req.flash('success').toString(),
+				error: req.flash('error').toString()
+			});
+		});
+	})
+
+	app.post('/msg', checkLogin);
+	app.post('/msg', function (req, res) {
+		var date = new Date(),
+			sendFrom = req.body.sendFrom,
+			sendTo = req.body.sendTo,
+			content = req.body.msgContent,
+			time = {
+				date: date,
+				year: date.getFullYear(),
+				month: date.getFullYear() + '-' + (date.getMonth() + 1),
+				day: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate(),
+				minute: date.getFullYear() 
+						+ '-' + (date.getMonth() + 1) 
+						+ '-' + date.getDate()
+						+ ' ' + date.getHours() 
+						+ ':' + ( date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes())
+			};
+			msg = new Msg(sendFrom, sendTo, time, content);
+
+		msg.save(function(err){
+			if(err){
+				req.flash('error', err);
+				return res.redirect('/');
+			}
+			req.flash('success', '发送消息成功！');
+			console.log('发送消息成功！');
+			res.redirect('/msg');
+		});
+	})
+
+	app.delete('/msg', checkLogin);
+	app.delete('/msg', function (req, res) {
+		console.log('delete start');
+		var sendFrom = req.body.sendFrom,
+			minute = req.body.minute;
+		Msg.remove(sendFrom, minute, function (err) {
+			if(err){
+				req.flash('error', err);
+				return res.redirect('/');
+			}
+			res.json({isDelete: true});
+		})
+	})
+
 	app.use(function (req, res) {
-		res.render('404');
+		Post.getArchive(function(err, posts) {
+			if (err) {
+				req.flash('error', err);
+				return res.redirect('/');
+			}
+			res.render('404', {
+				title: '帅到找不到链接！',
+				posts: posts,
+				user: req.session.user,
+				success: req.flash('success').toString(),
+				error: req.flash('error').toString()
+			});
+		});
 	})
 
 	function checkLogin(req, res, next){
@@ -396,4 +684,4 @@ module.exports = function(app){
 		}
 		next();
 	}
-} 
+}

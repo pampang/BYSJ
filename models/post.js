@@ -1,11 +1,20 @@
-var mongodb = require('./db'),
-	markdown = require('markdown').markdown;
+var mongodb = require('./db');
+	// markdown = require('markdown').markdown;
 
-function Post(name, title, tags, post){
+function Post(type, name, head, title, tags, post, count, startTime, endTime, province, city, district, detail){
+	this.type = type || 0;
 	this.name = name;
+	this.head = head;
 	this.title = title;
 	this.tags = tags;
 	this.post = post;
+	this.count = count || '';
+	this.startTime = startTime || '';
+	this.endTime = endTime || '';
+	this.province = province || '';
+	this.city = city || '';
+	this.district = district || '';
+	this.detail = detail || '';
 }
 
 Post.prototype.save = function(callback){
@@ -25,13 +34,21 @@ Post.prototype.save = function(callback){
 	};
 
 	// 要存入数据库的文档
-	console.log(this.tags);
 	var post = {
+		type: this.type,
 		name: this.name,
+		head: this.head,
 		time: time,
 		title: this.title,
 		tags: this.tags,
 		post: this.post,
+		count: this.count,
+		startTime: this.startTime,
+		endTime: this.endTime,
+		province: this.province,
+		city: this.city,
+		district: this.district,
+		detail: this.detail,
 		comments: [],
 		pv: 1
 	};
@@ -86,9 +103,9 @@ Post.getAll = function(name, callback){
 					return callback(err); //失败！返回err
 				}
 				// 解析Markdown为html
-				docs.forEach(function(doc){
-					doc.post = markdown.toHTML(doc.post);
-				})
+				// docs.forEach(function(doc){
+				// 	doc.post = markdown.toHTML(doc.post);
+				// })
 				callback(null, docs); // 成功！以数组形式返回查询的结果
 			});
 		});
@@ -126,9 +143,9 @@ Post.getTen = function (name, page, callback) {
 						callback(err);
 					}
 					// 解析Markdown为html
-					docs.forEach(function(doc) {
-						doc.post = markdown.toHTML(doc.post);
-					});
+					// docs.forEach(function(doc) {
+					// 	doc.post = markdown.toHTML(doc.post);
+					// });
 					callback(null, docs, total);
 				});
 			});
@@ -174,10 +191,10 @@ Post.getOne = function(name, day, title, callback){
 						}
 					});
 					// 解析markdown 为 html
-					doc.post = markdown.toHTML(doc.post);
-					doc.comments.forEach(function (comment) {
-						comment.content = markdown.toHTML(comment.content);
-					});
+					// doc.post = markdown.toHTML(doc.post);
+					// doc.comments.forEach(function (comment) {
+					// 	comment.content = markdown.toHTML(comment.content);
+					// });
 				}
 				callback(null, doc);
 			});
@@ -202,7 +219,8 @@ Post.getArchive = function (callback) {
 			collection.find({}, {
 				"name": 1,
 				"time": 1,
-				"title": 1
+				"title": 1,
+				"type": 1
 			}).sort({
 				time: -1
 			}).toArray(function(err, docs) {
@@ -302,7 +320,7 @@ Post.edit = function(name, day, title, callback) {
 	});
 };
 
-Post.update = function (name, day, title, post, callback) {
+Post.update = function (name, day, title, tags, post, callback) {
 	// 打开数据库
 	mongodb.open(function(err, db) {
 		if (err) {
@@ -318,7 +336,47 @@ Post.update = function (name, day, title, post, callback) {
 				"time.day": day,
 				"title": title
 			}, {
-				$set: {post: post}
+				$set: {
+					post: post,
+					tags: tags
+				}
+			}, function(err) {
+				mongodb.close();
+				if(err){
+					return callback(err);
+				}
+				callback(null);
+			});
+		});
+	});
+}
+
+Post.updateActivity = function (name, day, title, tags, post, startTime, endTime, province, city, district, detail, callback) {
+	// 打开数据库
+	mongodb.open(function(err, db) {
+		if (err) {
+			return callback(err);
+		}
+		db.collection('posts', function(err, collection) {
+			if (err) {
+				return callback(err);
+			}
+			// 更新文章内容
+			collection.update({
+				"name": name,
+				"time.day": day,
+				"title": title
+			}, {
+				$set: {
+					post: post,
+					tags: tags,
+					startTime: startTime,
+					endTime: endTime,
+					province: province,
+					city: city,
+					district: district,
+					detail: detail
+				}
 			}, function(err) {
 				mongodb.close();
 				if(err){
@@ -388,5 +446,35 @@ Post.search = function (keyword, callback) {
 		});
 	});
 };
+
+Post.joinActivity = function (name, day, title, userName, callback) {
+	// 打开数据库
+	mongodb.open(function(err, db) {
+		if (err) {
+			return callback(err);
+		}
+		db.collection('posts', function(err, collection) {
+			if (err) {
+				return callback(err);
+			}
+			// 更新文章内容
+			collection.update({
+				"name": name,
+				"time.day": day,
+				"title": title
+			}, {
+				$push: {
+					"joinList": userName
+				}
+			}, function(err) {
+				mongodb.close();
+				if(err){
+					return callback(err);
+				}
+				callback(null);
+			});
+		});
+	});
+}
 
 module.exports = Post;
