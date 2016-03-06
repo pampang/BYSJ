@@ -4,24 +4,22 @@
 		<p>
 			性别: 
 			<select name="sex" value="<%= user.sex %>">
-				<option value="male">男</option>
-				<option value="female">女</option>
+				<option value="男">男</option>
+				<option value="女">女</option>
 			</select>
 		</p>
 		<p>年龄: <input type="number" name="age" value="<%= user.age %>" /></p>
 		<p>电话: <input type="phone" name="phone" value="<%= user.phone %>" /></p>
 		<p>
-			地址: <%= user.address %> |	
-			重新选择：
+			地址:
 			<!-- 省 -->
-			<select class="form-control" name="province" id="province">
-
+			<select class="form-control" data-value="<%= user.province %>" name="province" id="province">
 			</select>
 			<!-- 市 -->
-			<select class="form-control" name="city" id="city">
+			<select class="form-control" data-value="<%= user.city %>" name="city" id="city">
 			</select>
 			<!-- 区 -->
-			<select class="form-control" name="district" id="district">
+			<select class="form-control" data-value="<%= user.district %>" name="district" id="district">
 			</select>
 		</p>
 		
@@ -30,6 +28,6 @@
 	</form>
 	<script src="js/address.js" type="text/javascript"></script>
 	<script type="text/javascript">
-		addressInit('province', 'city', 'district', '广东', '广州市', '天河区');
+		addressInit('province', 'city', 'district', $('#province').attr('data-value'), $('#city').attr('data-value'), $('#district').attr('data-value'));
 	</script>
 	<%- include footer %>

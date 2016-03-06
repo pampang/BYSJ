@@ -1,5 +1,15 @@
     <%- include header %>
-
+	
+	<!-- 如果存在个人信息 -->
+    <% if(user.name) { %>
+    <div>
+    	<h3>Ta的信息:</h3>
+		<p>姓名：<%= user.nickname%> | 性别：<%= user.sex%> | 年龄：<%= user.age%> | 电话：<%= user.phone%> | 地址：<%= user.address%></p>
+		<div class="join"><a class="sendMsg" href="javascript:void(0);">给TA发送信息~</a></div>
+	</div>
+	<br />
+	<hr />
+	<% } %>
 	<% posts.forEach(function(post, index) { %>
 	<p><h2><a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a></h2></p>
 	<p class="info">
@@ -15,5 +25,69 @@
 	<p><%- post.post %></p>
 	<p class="info">阅读：<%= post.pv %> | 评论：<%= post.comments.length %></p>
 	<% }) %>
+
+	<!-- 回复的弹窗 -->
+	<div class="popup-wp">
+		<div class="popup">
+			<form method="post" action="/msg">
+				<input type="hidden" name="sendFrom" value="<%= user.name %>" />
+				<input type="hidden" name="sendTo" value="<%= title %>" />
+				<p>发送消息给：<%= title %></p>
+				<p>请输入消息内容：</p>
+				<p>
+					<textarea name="msgContent"></textarea>
+				</p>
+				<p class="btnList"><input type="submit" value="发送！" /><a href="javascript:void(0);" class="exit">取消</a></p>
+			</form>
+		</div>
+	</div>
+
+	<style type="text/css">
+		.popup-wp{
+			display: none;
+			background-color: rgba(0, 0, 0, 0.8);
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+		.popup{
+			background: #fff;
+			border: 3px solid #666;
+			position: absolute;
+			top: 100px;
+			left: 0;
+			right: 0;
+			margin: auto;
+			width: 600px;
+			padding: 20px;
+			height: 320px;
+		}
+		.popup textarea{
+			width: 550px;
+			height: 120px;
+			margin: auto;
+		}
+		.btnList{
+			float: right;
+		}
+		.btnList > *{
+			display: inline-block;
+			width: 80px;
+			height: 25px;
+			margin: 5px;
+		}
+	</style>
+
+	<script type="text/javascript">
+		$('.exit').on('click', function() {
+			$('.popup-wp').hide();
+			return false;
+		});
+		$('.sendMsg').on('click', function () {
+			$('.popup-wp').show();
+		})
+	</script>
 	<%- include paging %>
 	<%- include footer %>

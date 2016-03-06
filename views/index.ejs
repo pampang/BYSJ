@@ -3,7 +3,16 @@
 	<% posts.forEach(function(post, index) { %>
 	<p>
 		<h2>
-			<a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a>
+			<a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">
+				<span class="type">
+				<% if(post.type == 0) { %>
+					文章
+				<% } else if ( post.type == 1 ) { %>
+					活动
+				<% } %>
+				</span>
+				<%= post.title %>
+			</a>
 		</h2>
 	</p>
 	<p class="info">

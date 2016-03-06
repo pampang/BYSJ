@@ -45,9 +45,8 @@ User.prototype.save = function(callback) {
 	});
 };
 
-User.update = function (name, nickname, sex, age, phone, address, callback) {
+User.update = function (name, nickname, sex, age, phone, province, city, district, callback) {
 	// 打开数据库
-	console.log(nickname + sex + age + phone + address);
 	mongodb.open(function(err, db) {
 		if (err) {
 			return callback(err);
@@ -56,7 +55,7 @@ User.update = function (name, nickname, sex, age, phone, address, callback) {
 			if (err) {
 				return callback(err);
 			}
-			// 更新文章内容
+			// 更新用户内容
 			collection.update({
 				name: name
 			}, {
@@ -65,7 +64,9 @@ User.update = function (name, nickname, sex, age, phone, address, callback) {
 					sex: sex,
 					age: age,
 					phone: phone,
-					address: address
+					province: province,
+					city: city,
+					district: district
 				}
 			}, function(err, user) {
 				if(err){
@@ -82,6 +83,42 @@ User.update = function (name, nickname, sex, age, phone, address, callback) {
 					callback(null, user);
 				})
 			});
+		});
+	});
+}
+
+User.updatePwd = function (name, password, callback) {
+	// 打开数据库
+	mongodb.open(function(err, db) {
+		if (err) {
+			return callback(err);
+		}
+		db.collection('users', function(err, collection) {
+			if (err) {
+				return callback(err);
+			}
+			// 更新用户内容
+			collection.update({
+				name: name
+			}, {
+				$set: {
+					password: password
+				}
+			}, function(err, user){
+				mongodb.close();
+				// 这里会无缘无故的报错。
+				// { [MongoError: server localhost:27017 sockets closed]
+  				// name: 'MongoError',
+  				// message: 'server localhost:27017 sockets closed' }
+				if(err){
+					console.log(err);
+					// 针对name=='MongoError'的错误不做任何处理。
+					if (!err.name == 'MongoError') {
+						return callback(err);
+					}
+				}
+				callback(null, user);
+			})
 		});
 	});
 }
