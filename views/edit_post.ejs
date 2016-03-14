@@ -1,10 +1,21 @@
 	<%- include header %>
 	<form method="post">
-		<p>标题: <input type="text" name="title"></p>
-		<p>标签: <input type="text" class="tagInput" name="tag1"><input type="text" class="tagInput" name="tag2"><input type="text" class="tagInput" name="tag3"></p>
-		<p>正文: 
-		<textarea class="textarea" name="post" rows="20" cols="100"></textarea></p>
-		<input type="submit" value="发表" class="submit"/>
+	  <input type="hidden" value="0" name="type" />
+	  <p>
+	  	标题：<br/>
+	  	<input type="text" name="title" value="<%= post.title %>" disabled="disabled" /><br />
+	  </p>
+	  <p>
+	  	标签：<br/>
+	  	<input type="text" name="tag1" value="<%= post.tags[0] %>" />
+	  	<input type="text" name="tag2" value="<%= post.tags[1] %>" />
+	  	<input type="text" name="tag3" value="<%= post.tags[2] %>" />
+	  </p>
+	  <p>
+	  	正文：<br/>
+	  	<textarea class="textarea" name="post" rows="20" cols="100"><%= post.post %></textarea><br />
+	  </p>
+	  <input type="submit" value="保存修改" />
 	</form>
 	<div class="addImg">
 		<p class="addImgBtn">添加图片</p>

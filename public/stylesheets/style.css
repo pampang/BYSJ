@@ -3,7 +3,7 @@
 	margin: 0;
 }
 body {
-	width: 600px;
+	width: 800px;
 	margin: 2em auto;
 	padding: 0 2em;
 	font-size: 14px;
@@ -28,10 +28,8 @@ nav {
 	text-align: right;
 	border-right: 1px solid #ccc;
 }
-nav a {
-	display: block;
-	text-decoration: none;
-	padding: .7em 1em;
+.btn-nav{
+	text-align: right;
 	color: #000;
 }
 nav a:hover {
@@ -251,4 +249,8 @@ ul {
 	text-align: center;
 	font-size: 20px;
 	font-weight: bold;
+}
+.post-content{
+	max-height: 800px;
+	overflow: auto;
 }

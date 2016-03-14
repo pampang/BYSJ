@@ -1,0 +1,27 @@
+	<%- include header %>
+	<form method="post">
+		<p><label>旧密码：</label><input type="password" name="password_old" id="password_old"></p>
+		<p><label>新密码：</label><input type="password" name="password" id="password"></p>
+		<p><label>确认密码：</label><input type="password" name="password-repeat"></p>
+		<input type="submit" value="修改密码" id="changePwd"/>
+	</form>
+
+	<script type="text/javascript">
+		$('#changePwd').on('click', function () {
+			var password_old = $('#password_old'),
+				password = $('password'),
+				password_re = $('password_re');
+			if( password_old.val().length == 0 ){
+				alert('旧密码都不填，怎么改密码啊~');
+				return false;
+			} else if( password.val().length == 0 ){
+				alert('新密码都不填，怎么改密码啊~');
+				return false;
+			} else if( password_re.val().length == 0 ){
+				alert('确认密码都不填，怎么改密码啊~');
+				return false;
+			}
+		})
+	</script>
+
+	<%- include footer %>

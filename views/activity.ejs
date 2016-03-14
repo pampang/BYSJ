@@ -1,6 +1,23 @@
 	<%- include header %>
 	<form method="post">
 		<p>标题: <input type="text" name="title"></p>
+		<p>参加人数: <input type="number" name="count"></p>
+		<!-- 插件修改。 -->
+		<p>开始时间: <input type="date" name="startTime"></p>
+		<p>结束时间: <input type="date" name="endTime"></p>
+		<p>
+			地址:  
+			<!-- 省 -->
+			<select class="form-control" name="province" id="province">
+			</select>
+			<!-- 市 -->
+			<select class="form-control" name="city" id="city">
+			</select>
+			<!-- 区 -->
+			<select class="form-control" name="district" id="district">
+			</select>
+			<input type="text" placeholder="请输入详细地址" name="detail" id="detail" />
+		</p>
 		<p>标签: <input type="text" class="tagInput" name="tag1"><input type="text" class="tagInput" name="tag2"><input type="text" class="tagInput" name="tag3"></p>
 		<p>正文: 
 		<textarea class="textarea" name="post" rows="20" cols="100"></textarea></p>
@@ -52,4 +69,10 @@
 			textarea.html( html );
 		}
 	</script>
+
+	<script src="js/address.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		addressInit('province', 'city', 'district', '广东', '广州市', '天河区');
+	</script>
+
 	<%- include footer %>

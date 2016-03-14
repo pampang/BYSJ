@@ -220,7 +220,8 @@ Post.getArchive = function (callback) {
 				"name": 1,
 				"time": 1,
 				"title": 1,
-				"type": 1
+				"type": 1,
+				"isDisabled": 1
 			}).sort({
 				time: -1
 			}).toArray(function(err, docs) {
@@ -277,7 +278,8 @@ Post.getTag = function (tag, callback) {
 			}, {
 				'name': 1,
 				'time': 1,
-				'title': 1
+				'title': 1,
+				'type': 1
 			}).sort({
 				time: -1
 			}).toArray(function(err, docs) {
@@ -376,6 +378,39 @@ Post.updateActivity = function (name, day, title, tags, post, startTime, endTime
 					city: city,
 					district: district,
 					detail: detail
+				}
+			}, function(err) {
+				mongodb.close();
+				if(err){
+					return callback(err);
+				}
+				callback(null);
+			});
+		});
+	});
+}
+
+Post.updateAble = function (name, day, title, isDisabled, reason, callback) {
+	// 打开数据库
+	debugger;
+	console.log(isDisabled, reason);
+	mongodb.open(function(err, db) {
+		if (err) {
+			return callback(err);
+		}
+		db.collection('posts', function(err, collection) {
+			if (err) {
+				return callback(err);
+			}
+			// 更新文章内容
+			collection.update({
+				"name": name,
+				"time.day": day,
+				"title": title
+			}, {
+				$set: {
+					isDisabled: isDisabled,
+					reason: reason
 				}
 			}, function(err) {
 				mongodb.close();

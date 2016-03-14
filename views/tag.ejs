@@ -2,11 +2,24 @@
 	<ul class="archive">
 	<% var lastYear = 0 %>
 	<% posts.forEach(function(post, index) {%>
+	<% if (!post.isDisabled){ %>
 		<% if(lastYear != post.time.year) { %>
 			<li><h3><%= post.time.year %></h3></li>
 		<% lastYear = post.time.year; } %>
 		<li><time><%= post.time.day %></time></li>
-		<li><a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a></li>
+		<li>
+			<a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">
+				<span class="archiveType">
+				<% if(post.type == 0) { %>
+					文章
+				<% } else if ( post.type == 1 ) { %>
+					活动
+				<% } %>
+				</span>
+				<%= post.title %>
+			</a>
+		</li>
+	<% } %>
 	<% }) %>
 	</ul>
 	<%- include footer %>

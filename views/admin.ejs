@@ -1,0 +1,199 @@
+	<%- include header %>
+	<style type="text/css">
+	table{
+		width: 100%;
+	}
+	tr{
+		height: 50px;
+	}
+	th, td{
+		min-width: 50px;
+		text-align: center;
+	}
+	.enterReason{
+		display: none;
+	}
+	.userManageTable{
+		display: none;
+	}
+	</style>
+	<div class="btn-group">
+		<h3 class="postManage btn btn-success active">文章管理</h3>
+		<h3 class="userManage btn btn-success">用户管理</h3>
+	</div>
+
+	<!-- postManageTable -->
+	<table class="postManageTable table table-striped">
+		<thead>
+			<th>类型</th>
+			<th>名称</th>
+			<th>时间</th>
+			<th>作者</th>
+			<th>操作</th>
+		</thead>
+		<tbody>
+			<% posts.forEach(function(post, index) {%>
+			<tr>
+				<td>
+					<% if(post.type == 0) { %>
+						文章
+					<% } else if ( post.type == 1 ) { %>
+						活动
+					<% } %>
+				</td>
+				<td>
+					<a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">
+						<%= post.title %>
+					</a>
+				</td>
+				<td><%= post.time.minute %></td>
+				<td><%= post.name %></td>
+				<td>
+					<% if (post.isDisabled ){ %>
+					<div>
+						<button class="btn-able-post btn btn-primary" data-isDisabled="false" data-name="<%=post.name%>" data-title="<%=post.title%>" data-day="<%=post.time.day%>">启用</button>
+						<div class="enterReason">
+							<input type="text" class="reason" />
+							<button class="confirm-post">确定</button>
+							<button class="exit">取消</button>
+						</div>
+					</div>
+					<% } else { %>
+					<div>
+						<button class="btn-able-post btn btn-danger" data-isDisabled="true" data-name="<%=post.name%>" data-title="<%=post.title%>" data-day="<%=post.time.day%>">禁用</button>
+						<div class="enterReason">
+							<input type="text" class="reason" />
+							<button class="confirm-post">确定</button>
+							<button class="exit">取消</button>
+						</div>
+					</div>
+					<% } %>
+				</td>
+			</tr>
+			<% }) %>
+		</tbody>
+	</table>
+
+	<!-- userManageTable -->
+	<table class="userManageTable table table-striped">
+		<thead>
+			<th>用户名</th>
+			<th>昵称</th>
+			<th>性别</th>
+			<th>年龄</th>
+			<th>电话</th>
+			<th>地址</th>
+			<th>操作</th>
+		</thead>
+		<tbody>
+			<% users.forEach(function(user, index) {%>
+			<tr>
+				<td>
+					<a href="/u/<%= user.name %>"><%= user.name %></a>
+				</td>
+				<td><%= user.nickname%></td>
+				<td><%= user.sex%></td>
+				<td><%= user.age%></td>
+				<td><%= user.phone%></td>
+				<td><%= user.address%></td>
+				<td>
+					<% if ( user.isDisabled ){ %>
+					<div>
+						<button class="btn-able-user btn btn-primary" data-isDisabled="false" data-name="<%=user.name%>">启用</button>
+						<div class="enterReason">
+							<input type="text" class="reason" />
+							<button class="confirm-user">确定</button>
+							<button class="exit">取消</button>
+						</div>
+					</div>
+					<% } else { %>
+					<div>
+						<button class="btn-able-user btn btn-danger" data-isDisabled="true" data-name="<%=user.name%>">禁用</button>
+						<div class="enterReason">
+							<input type="text" class="reason" />
+							<button class="confirm-user">确定</button>
+							<button class="exit">取消</button>
+						</div>
+					</div>
+					<% } %>
+				</td>
+			</tr>
+			<% }) %>
+		</tbody>
+	</table>
+
+	<script type="text/javascript">
+		$('.postManage').on('click', function () {
+			$('.postManageTable').show();
+			$('.userManageTable').hide();
+		})
+		$('.userManage').on('click', function () {
+			$('.postManageTable').hide();
+			$('.userManageTable').show();
+		})
+
+		$('.btn-able-post').on('click', function () {
+			$(this).siblings('.enterReason').show();
+		});
+
+		$('.btn-able-user').on('click', function () {
+			$(this).siblings('.enterReason').show();
+		});
+
+		$('.exit').on('click', function () {
+			$(this).parent().hide();
+		})
+
+		// 发送文章禁用请求
+		$('.confirm-post').on('click', function () {
+			var $data = $(this).parent().siblings('.btn-able-post'),
+				reason = $(this).siblings('.reason').val();
+			$.ajax({
+				url: '/adminPost',
+				type: 'post',
+				data: {
+					isDisabled: $data.attr('data-isDisabled'),
+					name: $data.attr('data-name'),
+					title: $data.attr('data-title'),
+					day: $data.attr('data-day'),
+					reason: reason
+				},
+				success: function (data) {
+					if (data.ok) {
+						location.reload();
+					} else {
+						alert('启/禁用失败！请稍后再试。');
+					}
+				},
+				error: function () {
+					alert('启/禁用失败！请稍后再试。');
+				}
+			})
+		})
+
+		// 发送用户禁用请求
+		$('.confirm-user').on('click', function () {
+			var $data = $(this).parent().siblings('.btn-able-user'),
+				reason = $(this).siblings('.reason').val();
+			$.ajax({
+				url: '/adminUser',
+				type: 'post',
+				data: {
+					isDisabled: $data.attr('data-isDisabled'),
+					name: $data.attr('data-name'),
+					reason: reason
+				},
+				success: function (data) {
+					if (data.ok) {
+						location.reload();
+					} else {
+						alert('启/禁用失败！请稍后再试。');
+					}
+				},
+				error: function () {
+					alert('启/禁用失败！请稍后再试。');
+				}
+			})
+		})
+	</script>
+	<%- include footer %>
