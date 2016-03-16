@@ -202,6 +202,35 @@ Post.getOne = function(name, day, title, callback){
 	});
 };
 
+// 获取一篇文章
+Post.getOne2 = function(name, day, title, callback){
+	// 打开数据库
+	mongodb.open(function(err, db){
+		if(err){
+			return callback(err);
+		}
+		// 读取posts集合
+		db.collection('posts', function(err, collection){
+			if(err){
+				mongodb.close();
+				return callback(err);
+			}
+			// 根据用户名、发表日期及文章名进行查询
+			collection.findOne({
+				'name': name,
+				'time.day': day,
+				'title': title
+			}, function(err, doc){
+				if(err){
+					mongodb.close();
+					return callback(err);
+				}
+				callback(null, doc);
+			});
+		});
+	});
+};
+
 // 返回所有文章存档信息
 Post.getArchive = function (callback) {
 	// 打开数据库
@@ -511,5 +540,57 @@ Post.joinActivity = function (name, day, title, userName, callback) {
 		});
 	});
 }
+
+Post.deleteComment = function(name, day, title, commentContent, commentTime, callback){
+	// 打开数据库
+	mongodb.open(function(err, db){
+		if(err){
+			return callback(err);
+		}
+		// 读取posts集合
+		db.collection('posts', function(err, collection){
+			if(err){
+				mongodb.close();
+				return callback(err);
+			}
+			// 根据用户名、发表日期及文章名进行查询
+			collection.findOne({
+				'name': name,
+				'time.day': day,
+				'title': title
+			}, function(err, doc){
+				console.log(doc.comments[1]);
+				if(err){
+					mongodb.close();
+					return callback(err);
+				}
+				for (var i=0, len=doc.comments.length; i<len; i++){
+					// 根据name, content, time指定评论
+					if (doc.comments[i].content == commentContent
+						&& doc.comments[i].time == commentTime) {
+						
+						doc.comments.splice(i+1, 1);
+						// 删除评论
+						collection.update({
+							"name": name,
+							"time.day": day,
+							"title": title
+						}, {
+							$set: {
+								'comments': doc.comments
+							}
+						}, function(err) {
+							mongodb.close();
+							if(err){
+								return callback(err);
+							}
+							return callback(null);
+						});
+					}
+				}
+			});
+		});
+	});
+};
 
 module.exports = Post;

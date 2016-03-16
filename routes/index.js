@@ -21,6 +21,7 @@ module.exports = function(app){
 			res.render('index', {
 				title: '主页',
 				user: req.session.user,
+				admin: req.session.admin || '',
 				posts: posts,
 				page: page,
 				isFirstPage: (page - 1) == 0,
@@ -37,6 +38,7 @@ module.exports = function(app){
 		res.render('reg', { 
 			title: '注册',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -85,6 +87,7 @@ module.exports = function(app){
 		res.render('login', { 
 			title: '登录', 
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -126,6 +129,7 @@ module.exports = function(app){
 		res.render('profile', {
 			title: '个人资料',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		})
@@ -160,6 +164,7 @@ module.exports = function(app){
 		res.render('pwd', {
 			title: '修改密码',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		})
@@ -214,6 +219,7 @@ module.exports = function(app){
 		res.render('post', { 
 			title: '发表文章',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -242,6 +248,7 @@ module.exports = function(app){
 		res.render('activity', { 
 			title: '发表活动',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -331,6 +338,7 @@ module.exports = function(app){
 		res.render('links', {
 			title: '友情链接',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -346,6 +354,7 @@ module.exports = function(app){
 			title: 'SEARCH: ' + req.query.keyword,
 			posts: posts,
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -371,6 +380,7 @@ module.exports = function(app){
 					title: user.name,
 					posts: posts,
 					user: req.session.user,
+					admin: req.session.admin || '',
 					page: page,
 					isFirstPage: (page - 1) == 0,
 					isLastPage: ((page - 1) * 10 + posts.length) == total,
@@ -391,6 +401,7 @@ module.exports = function(app){
 				title: '存档',
 				posts: posts,
 				user: req.session.user,
+				admin: req.session.admin || '',
 				success: req.flash('success').toString(),
 				error: req.flash('error').toString()
 			});
@@ -407,6 +418,7 @@ module.exports = function(app){
 				title: '标签',
 				posts: posts,
 				user: req.session.user,
+				admin: req.session.admin || '',
 				success: req.flash('success').toString(),
 				error: req.flash('error').toString()
 			});
@@ -424,6 +436,7 @@ module.exports = function(app){
 				title: 'TAG: ' + req.params.tag,
 				posts: posts,
 				user: req.session.user,
+				admin: req.session.admin || '',
 				success: req.flash('success').toString(),
 				error: req.flash('error').toString()
 			});
@@ -442,6 +455,7 @@ module.exports = function(app){
 					title: req.params.title,
 					post: post,
 					user: req.session.user,
+					admin: req.session.admin || '',
 					success: req.flash('success').toString(),
 					error: req.flash('error').toString()
 				});
@@ -452,6 +466,7 @@ module.exports = function(app){
 					title: req.params.title,
 					post: post,
 					user: req.session.user,
+					admin: req.session.admin || '',
 					success: req.flash('success').toString(),
 					error: req.flash('error').toString()
 				});
@@ -529,6 +544,7 @@ module.exports = function(app){
 					title: '编辑',
 					post: post,
 					user: req.session.user,
+					admin: req.session.admin || '',
 					success: req.flash('success').toString(),
 					error: req.flash('error').toString()
 				});
@@ -539,6 +555,7 @@ module.exports = function(app){
 					title: '编辑',
 					post: post,
 					user: req.session.user,
+					admin: req.session.admin || '',
 					success: req.flash('success').toString(),
 					error: req.flash('error').toString()
 				});
@@ -605,6 +622,7 @@ module.exports = function(app){
 			res.render('msg', {
 				title: '我的消息',
 				user: req.session.user,
+				admin: req.session.admin || '',
 				msgs: msgs,
 				page: page,
 				isFirstPage: (page - 1) == 0,
@@ -669,6 +687,7 @@ module.exports = function(app){
 		res.render('adminLogin', { 
 			title: '管理员登录', 
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -727,7 +746,8 @@ module.exports = function(app){
 					title: '管理员主页',
 					posts: posts,
 					users: users,
-					user: req.session.admin,
+					admin: req.session.admin || '',
+					user: req.session.user || '',
 					success: req.flash('success').toString(),
 					error: req.flash('error').toString()
 				});
@@ -743,7 +763,7 @@ module.exports = function(app){
 			day = req.body.day,
 			isDisabled = req.body.isDisabled,
 			reason = req.body.reason;
-		console.log(name, title, day, isDisabled, reason);
+
 		Post.updateAble(name, day, title, isDisabled, reason, function (err) {
 			if(err){
 				req.flash('error', err);
@@ -761,7 +781,7 @@ module.exports = function(app){
 		var name = req.body.name,
 			isDisabled = req.body.isDisabled,
 			reason = req.body.reason;
-		console.log(name, isDisabled, reason);
+
 		User.updateAble(name, isDisabled, reason, function (err) {
 			if(err){
 				req.flash('error', err);
@@ -769,6 +789,45 @@ module.exports = function(app){
 			}
 			req.flash('success', '启/禁用成功！');
 			console.log('启/禁用成功！');
+			res.json({"ok": true});
+		})
+	})
+
+	app.get('/admin/comment/:name/:day/:title', function(req, res){
+		// 查询并返回用户的指定文章
+		Post.getOne2(req.params.name, req.params.day, req.params.title, function(err, post){
+			if(err){
+				req.flash('error', err);
+				return res.redirect('/');
+			}
+
+			res.render('adminComment', {
+				title: '评论管理: ' + req.params.title,
+				post: post,
+				admin: req.session.admin || '',
+				user: req.session.user || '',
+				success: req.flash('success').toString(),
+				error: req.flash('error').toString()
+			});
+			return;
+		});
+	});
+
+	// 删除评论
+	app.post('/admin/comment/:name/:day/:title', checkLogin);
+	app.post('/admin/comment/:name/:day/:title', function (req, res) {
+		var content = req.body.content,
+			time = req.body.time,
+			isDisabled = req.body.isDisabled,
+			reason = req.body.reason;
+
+		Post.deleteComment(req.params.name, req.params.day, req.params.title, content, time, function (err) {
+			if(err){
+				req.flash('error', err);
+				return res.redirect('/admin/comment/' + req.params.name + '/' + req.params.day + '/' + req.params.title);
+			}
+			req.flash('success', '删除评论成功！');
+			console.log('删除评论成功！');
 			res.json({"ok": true});
 		})
 	})
@@ -785,6 +844,7 @@ module.exports = function(app){
 				title: '帅到找不到链接！',
 				posts: posts,
 				user: req.session.user,
+				admin: req.session.admin || '',
 				success: req.flash('success').toString(),
 				error: req.flash('error').toString()
 			});
@@ -792,7 +852,7 @@ module.exports = function(app){
 	})
 
 	function checkLogin(req, res, next){
-		if(!req.session.user){
+		if(!req.session.user || !req.session.admin ){
 			req.flash('error', '未登录！');
 			console.log('未登录！');
 			return res.redirect('/login');

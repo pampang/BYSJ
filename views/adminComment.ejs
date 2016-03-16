@@ -1,0 +1,50 @@
+<%- include header %>
+<table class="postManageTable table table-striped">
+	<thead>
+		<th>评论人</th>
+		<th>评论内容</th>
+		<th>评论时间</th>
+		<th>操作</th>
+	</thead>
+	<tbody>
+		<% post.comments.forEach(function(comment) {%>
+		<tr>
+			<td><%= comment.name %></td>
+			<td><%= comment.content %></td>
+			<td><%= comment.time %></td>
+			<td>
+				<div>
+					<button class="comment-post btn btn-danger btn-block" data-content="<%=comment.content%>" data-time="<%=comment.time%>">删除评论</button>
+				</div>
+			</td>
+		</tr>
+		<% }) %>
+	</tbody>
+</table>
+<script type="text/javascript">
+	// 发送文章禁用请求
+	$('.comment-post').on('click', function () {
+		if (confirm('确定删除此评论？')) {
+			var $data = $(this);
+
+			$.ajax({
+				type: 'post',
+				data: {
+					content: $data.attr('data-content'),
+					time: $data.attr('data-time')
+				},
+				success: function (data) {
+					if (data.ok) {
+						location.reload();
+					} else {
+						alert('删除失败！请稍后再试。');
+					}
+				},
+				error: function () {
+					alert('删除失败！请稍后再试。');
+				}
+			})
+		}
+	})
+</script>
+<%- include footer %>

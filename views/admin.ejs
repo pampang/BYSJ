@@ -51,7 +51,8 @@
 				<td>
 					<% if (post.isDisabled ){ %>
 					<div>
-						<button class="btn-able-post btn btn-primary" data-isDisabled="false" data-name="<%=post.name%>" data-title="<%=post.title%>" data-day="<%=post.time.day%>">启用</button>
+						<a class="btn-able-post btn btn-warning btn-block" href="/admin/comment/<%=post.name%>/<%=post.time.day%>/<%=post.title%>">管理评论</a>
+						<button class="btn-able-post btn btn-primary  btn-block" data-isDisabled="false" data-name="<%=post.name%>" data-title="<%=post.title%>" data-day="<%=post.time.day%>">启用</button>
 						<div class="enterReason">
 							<input type="text" class="reason" />
 							<button class="confirm-post">确定</button>
@@ -60,7 +61,8 @@
 					</div>
 					<% } else { %>
 					<div>
-						<button class="btn-able-post btn btn-danger" data-isDisabled="true" data-name="<%=post.name%>" data-title="<%=post.title%>" data-day="<%=post.time.day%>">禁用</button>
+						<a class="btn-able-post btn btn-warning btn-block" href="/admin/comment/<%=post.name%>/<%=post.time.day%>/<%=post.title%>">管理评论</a>
+						<button class="btn-able-post btn btn-danger btn-block" data-isDisabled="true" data-name="<%=post.name%>" data-title="<%=post.title%>" data-day="<%=post.time.day%>">禁用</button>
 						<div class="enterReason">
 							<input type="text" class="reason" />
 							<button class="confirm-post">确定</button>

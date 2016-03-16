@@ -25,19 +25,21 @@
 
 	<header>
 	<h1><%= title %></h1>
-	<% if (user) { %>
+	<% if (admin || user) { %>
 	<div class="profile">
 		<p class="btn-group">
-			<a class="btn btn-default" href="/profile">
-				<% if (user.isAdmin) { %>
+			<% if (admin) { %>
 				<span class="archiveType">
 				管理员
 				</span>
-				<% }%>
+				<%= admin.name %>
+			<% } else if (user) { %>
+			<a class="btn btn-default" href="/profile">
 				<%= user.name %>
 			</a>
 			<a class="btn btn-default" href="/msg">我的消息</a>
 			<a class="btn btn-default" href="/pwd">修改密码</a>
+			<% } %>
 		</p>
 	</div>
 	<% } %>
