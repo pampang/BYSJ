@@ -246,7 +246,7 @@ module.exports = function(app){
 	app.get('/activity', checkLogin);
 	app.get('/activity', function(req, res) {
 		res.render('activity', { 
-			title: '发表活动',
+			title: '发布活动',
 			user: req.session.user,
 			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
@@ -852,11 +852,11 @@ module.exports = function(app){
 	})
 
 	function checkLogin(req, res, next){
-		if(!req.session.user || !req.session.admin ){
-			req.flash('error', '未登录！');
-			console.log('未登录！');
-			return res.redirect('/login');
-		}
+		// if(!req.session.user || !req.session.admin ){
+		// 	req.flash('error', '未登录！');
+		// 	console.log('未登录！');
+		// 	return res.redirect('/login');
+		// }
 		next();
 	}
 

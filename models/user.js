@@ -180,6 +180,7 @@ User.getAll = function (callback) {
 				if (err) {
 					callback(err);
 				}
+				docs = docs.reverse();
 				callback(null, docs);
 			});
 		});
