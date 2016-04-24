@@ -2,6 +2,7 @@ PAMPANG的毕业设计。
 目前正在制作一个论坛并不断的完善。
 
 执行：
-1/ npm i
-2/ node app
-3/ 登录localhost:3000进入主页
+1/ 打开mongodb，使用名为blog的集合
+2/ npm i
+3/ node app.js
+4/ 登录localhost:3000进入主页
