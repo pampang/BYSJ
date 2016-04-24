@@ -1,0 +1,75 @@
+	<%- include header %>
+	<form method="post">
+	  <input type="hidden" value="1" name="type" />
+	  <p>
+	  	标题：<br/>
+	  	<input type="text" name="title" value="<%= post.title %>" disabled="disabled" /><br />
+	  </p>
+	  <p>
+	  	标签：<br/>
+	  	<input type="text" name="tag1" value="<%= post.tags[0] %>" />
+	  	<input type="text" name="tag2" value="<%= post.tags[1] %>" />
+	  	<input type="text" name="tag3" value="<%= post.tags[2] %>" />
+	  </p>
+	  <p>开始时间: <input type="date" name="startTime" value="<%= post.startTime %>"></p>
+	  <p>结束时间: <input type="date" name="endTime" value="<%= post.endTime %>"></p>
+	  <p>
+			地址:
+			<!-- 省 -->
+			<select class="form-control" data-value="<%= post.province %>" name="province" id="province">
+			</select>
+			<!-- 市 -->
+			<select class="form-control" data-value="<%= post.city %>" name="city" id="city">
+			</select>
+			<!-- 区 -->
+			<select class="form-control" data-value="<%= post.district %>" name="district" id="district">
+			</select>
+			<input type="text" placeholder="请输入详细地址" name="detail" id="detail" value="<%= post.detail %>" />
+		</p>
+	  <p>
+	  	正文：<br/>
+	  	<textarea class="textarea" name="post" rows="20" cols="100"><%= post.post %></textarea><br />
+	  </p>
+	  <input type="submit" value="保存修改" />
+	</form>
+	<div class="addImg">
+		<p class="addImgBtn">添加图片</p>
+		<form id="uploadImg" method="post" action="/uploadImg" enctype="multipart/form-data">
+			<input type="file" id="img" name="img" />
+		</form>
+	</div>
+	
+	<script type="text/javascript" src="/js/jquery.form.min.js"></script>
+	<script type="text/javascript">
+
+		var options = { 
+	       // target:        '#output',   // target element(s) to be updated with server response 
+	        success:   addImg,  // post-submit callback
+			resetForm: true
+	        // other available options: 
+	        //url:       url         // override for form's 'action' attribute 
+	        //type:      type        // 'get' or 'post', override for form's 'method' attribute 
+	        //dataType:  null        // 'xml', 'script', or 'json' (expected server response type) 
+	        //clearForm: true        // clear all form fields after successful submit 
+	        //resetForm: true        // reset the form after successful submit 
+	 
+	        // $.ajax options can be used here too, for example: 
+	        //timeout:   3000 
+	    }; 
+
+		$('#img').on('change', function () {
+			$('#uploadImg').ajaxSubmit(options);
+		})
+
+		function addImg (response) {
+			var textarea = $(window.frames[0].document).find('.ke-content');
+
+			var html = textarea.html() + '<p><img style="width:80%;" src="/images/'+response.filename+ '"/></p>';
+			textarea.html( html );
+		}
+	</script>
+	<script src="/js/address.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		addressInit('province', 'city', 'district', $('#province').attr('data-value'), $('#city').attr('data-value'), $('#district').attr('data-value'));
+	</script>
+	<%- include footer %>

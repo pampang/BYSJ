@@ -2,6 +2,7 @@
 <html>
   <head>
     <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css" />
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="/kindeditor/kindeditor-min.js"></script>
@@ -24,31 +25,39 @@
 
 	<header>
 	<h1><%= title %></h1>
-	<% if (user) { %>
+	<% if (admin || user) { %>
 	<div class="profile">
-		<p>
-			欢迎您，
-			<a href="/profile"><%= user.name %></a>
-			<a href="/msg">我的消息</a>
-			<a href="/pwd">修改密码</a>
+		<p class="btn-group">
+			<% if (admin) { %>
+				<span class="archiveType">
+				管理员
+				</span>
+				<%= admin.name %>
+			<% } else if (user) { %>
+			<a class="btn btn-default" href="/profile">
+				<%= user.name %>
+			</a>
+			<a class="btn btn-default" href="/msg">我的消息</a>
+			<a class="btn btn-default" href="/pwd">修改密码</a>
+			<% } %>
 		</p>
 	</div>
 	<% } %>
 	</header>
 
 	<nav>
-	<span><a title="主页" href="/">主页</a></span>
-	<span><a title="存档" href="/archive">存档</a></span>
-	<span><a title="标签" href="/tags">标签</a></span>
+	<span><a class="btn-nav btn btn-default btn-block" title="主页" href="/">主页</a></span>
+	<span><a class="btn-nav btn btn-default btn-block" title="存档" href="/archive">存档</a></span>
+	<span><a class="btn-nav btn btn-default btn-block" title="标签" href="/tags">标签</a></span>
 	<% if (user) { %>
-	    <span><a title="发表文章" href="/post">发表文章</a></span>
-	    <span><a title="发布活动" href="/activity">发布活动</a></span>
-	    <span><a title="登出" href="/logout">登出</a></span>
+	    <span><a class="btn-nav btn btn-default btn-block" title="发表文章" href="/post">发表文章</a></span>
+	    <span><a class="btn-nav btn btn-default btn-block" title="发布活动" href="/activity">发布活动</a></span>
+	    <span><a class="btn-nav btn btn-default btn-block" title="登出" href="/logout">登出</a></span>
 	<% } else { %>
-	    <span><a title="登录" href="/login">登录</a></span>
-	    <span><a title="注册" href="/reg">注册</a></span>
+	    <span><a class="btn-nav btn btn-default btn-block" title="登录" href="/login">登录</a></span>
+	    <span><a class="btn-nav btn btn-default btn-block" title="注册" href="/reg">注册</a></span>
 	<% } %>
-		<span><a title="友情链接" href="/links">友情链接</a></span>
+		<span><a class="btn-nav btn btn-default btn-block" title="友情链接" href="/links">友情链接</a></span>
 		<span>
 			<form action="/search" method="GET">
 				<input type="text" name="keyword" placeholder="搜点什么吧..." class="search">

@@ -1,0 +1,135 @@
+	<%- include header %>
+	<style type="text/css">
+		.msg{
+			width: 100%;
+			text-align: center;
+		}
+		.msg th, td{
+			border: 1px dashed #666;
+		}
+		.popup-wp{
+			display: none;
+			background-color: rgba(0, 0, 0, 0.8);
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+		.popup{
+			background: #fff;
+			border: 3px solid #666;
+			position: absolute;
+			top: 100px;
+			left: 0;
+			right: 0;
+			margin: auto;
+			width: 600px;
+			padding: 20px;
+			height: 320px;
+		}
+		.popup textarea{
+			width: 550px;
+			height: 120px;
+			margin: auto;
+		}
+		.btnList{
+			float: right;
+		}
+		.btnList > *{
+			display: inline-block;
+			width: 80px;
+			height: 25px;
+			margin: 5px;
+		}
+	</style>
+	<% if (msgs.length == 0) { %>
+		<h3>你还没有消息呢！</h3>
+	<% } else { %>
+		<table class="msg">
+			<!-- 通过接收方来筛选信息。 -->
+			<!-- 用一个table将内容存放。 -->
+			<!-- 来自form，发送时间time，信息内容content，回复按钮reply\删除按钮delete。 -->
+			<!-- 回复信息直接带一个用户的name就可以了。 -->
+			<!-- 直接在一页内完全显示。 -->
+
+			<!-- 还需要一个入口！在个人资料那里！user.ejs -->
+			<thead>
+				<tr>
+					<th>发送方</th>
+					<th>发送时间</th>
+					<th>信息内容</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			<% msgs.forEach(function(msg, index) { %>
+				<tr>
+					<td><%= msg.sendFrom %></td>
+					<td><%= msg.time.minute %></td>
+					<td><%= msg.content %></td>
+					<td data-from="<%= msg.sendFrom %>">
+						<!-- 回复要弹窗。 -->
+						<button class="reply">回复</button>
+						<button class="delete" data-from="<%= msg.sendFrom %>" data-minute="<%= msg.time.minute %>">删除</button>
+					</td>
+				</tr>
+			<% }) %>
+			</tbody>
+		</table>
+	<% } %>
+	
+	<!-- 回复的弹窗 -->
+	<div class="popup-wp">
+		<div class="popup">
+			<form method="post">
+				<input type="hidden" name="sendFrom" value="<%= user.name %>" />
+				<input class="replyto" type="hidden" name="sendTo" value="" />
+				<p>回复消息给：<span class="replyto2"></span></p>
+				<p>请输入消息内容：</p>
+				<p>
+					<textarea name="msgContent"></textarea>
+				</p>
+				<p class="btnList"><input type="submit" value="发送！" /><a href="javascript:void(0);" class="exit">取消</a></p>
+			</form>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		$('.exit').on('click', function() {
+			$('.popup-wp').hide();
+			return false;
+		});
+
+		$('.reply').on('click', function () {
+			$('.popup-wp').show();
+
+			var sendTo = $(this).parents().attr('data-from');
+			$('.replyto').val(sendTo);
+			$('.replyto2').html(sendTo);
+		})
+
+		$('.delete').on('click', function () {
+			$.ajax({
+				url: '/msg',
+				type: 'delete',
+				data: {
+					sendFrom: $(this).attr('data-from'),
+					minute: $(this).attr('data-minute')
+				},
+				success: function (data) {
+					if (data.isDelete) {
+						location.reload();
+					} else {
+						alert('删除失败！请稍后再试。');
+					}
+				},
+				error: function () {
+					alert('删除失败！请稍后再试。');
+				}
+			})
+		})
+	</script>
+
+	<%- include paging %>
+	<%- include footer %>

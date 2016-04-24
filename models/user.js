@@ -150,4 +150,70 @@ User.get = function(name, callback) {
 	})
 }
 
+// 返回所有用户信息
+User.getAll = function (callback) {
+	// 打开数据库
+	mongodb.open(function(err, db) {
+		if (err) {
+			callback(err);
+		}
+		// 读取Posts集合
+		db.collection('users', function(err, collection) {
+			if (err) {
+				mongodb.close();
+				callback(err);
+			}
+			// 返回包含name, time, title属性的文档组成的存档数组
+			collection.find({}, {
+				"name": 1,
+				"email": 1,
+				"nickname": 1,
+				"sex": 1,
+				"age": 1,
+				"phone": 1,
+				"address": 1,
+				"isDisabled": 1
+			}).sort({
+				time: -1
+			}).toArray(function(err, docs) {
+				mongodb.close();
+				if (err) {
+					callback(err);
+				}
+				docs = docs.reverse();
+				callback(null, docs);
+			});
+		});
+	});
+}
+
+User.updateAble = function (name, isDisabled, reason, callback) {
+	// 打开数据库
+	mongodb.open(function(err, db) {
+		if (err) {
+			return callback(err);
+		}
+		db.collection('users', function(err, collection) {
+			if (err) {
+				return callback(err);
+			}
+			// 更新文章内容
+			collection.update({
+				name: name
+			}, {
+				$set: {
+					isDisabled: isDisabled,
+					reason: reason
+				}
+			}, function(err) {
+				mongodb.close();
+				if(err){
+					return callback(err);
+				}
+				callback(null);
+			});
+		});
+	});
+}
+
 module.exports = User;

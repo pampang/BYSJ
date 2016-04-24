@@ -29,14 +29,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// var multer = require('multer');
-// app.use(multer({
-//   dest: './public/images',
-//   rename: function (fieldname, filename) {
-//     return filename;
-//   }
-// }));
-
 app.use(session({
 	secret: settings.cookieSecret,
 	key: settings.db, //cookie name

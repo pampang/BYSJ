@@ -3,6 +3,7 @@ var router = express.Router();
 
 var crypto = require('crypto'),
 	User = require('../models/user.js'),
+	// Admin = require('../models/admin.js'),
 	Post = require('../models/post.js'),
 	Msg = require('../models/Msg.js'),
 	Comment = require('../models/comment.js');
@@ -20,6 +21,7 @@ module.exports = function(app){
 			res.render('index', {
 				title: '主页',
 				user: req.session.user,
+				admin: req.session.admin || '',
 				posts: posts,
 				page: page,
 				isFirstPage: (page - 1) == 0,
@@ -36,6 +38,7 @@ module.exports = function(app){
 		res.render('reg', { 
 			title: '注册',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -84,6 +87,7 @@ module.exports = function(app){
 		res.render('login', { 
 			title: '登录', 
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -101,6 +105,12 @@ module.exports = function(app){
 				console.log('用户不存在！');
 				return res.redirect('/login');			
 			};
+			// 检查user是否被禁用
+			if (user.isDisabled) {
+				req.flash('err', '用户被禁用！'+user.reason);
+				console.log('用户被禁用！');
+				return res.end('用户被禁用'+user.reason);
+			}
 			// 检查密码是否一致
 			if(user.password != password){
 				req.flash('error', '密码错误');
@@ -119,6 +129,7 @@ module.exports = function(app){
 		res.render('profile', {
 			title: '个人资料',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		})
@@ -153,6 +164,7 @@ module.exports = function(app){
 		res.render('pwd', {
 			title: '修改密码',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		})
@@ -207,6 +219,7 @@ module.exports = function(app){
 		res.render('post', { 
 			title: '发表文章',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -233,8 +246,9 @@ module.exports = function(app){
 	app.get('/activity', checkLogin);
 	app.get('/activity', function(req, res) {
 		res.render('activity', { 
-			title: '发表活动',
+			title: '发布活动',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -324,6 +338,7 @@ module.exports = function(app){
 		res.render('links', {
 			title: '友情链接',
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -339,6 +354,7 @@ module.exports = function(app){
 			title: 'SEARCH: ' + req.query.keyword,
 			posts: posts,
 			user: req.session.user,
+			admin: req.session.admin || '',
 			success: req.flash('success').toString(),
 			error: req.flash('error').toString()
 		});
@@ -364,6 +380,7 @@ module.exports = function(app){
 					title: user.name,
 					posts: posts,
 					user: req.session.user,
+					admin: req.session.admin || '',
 					page: page,
 					isFirstPage: (page - 1) == 0,
 					isLastPage: ((page - 1) * 10 + posts.length) == total,
@@ -384,6 +401,7 @@ module.exports = function(app){
 				title: '存档',
 				posts: posts,
 				user: req.session.user,
+				admin: req.session.admin || '',
 				success: req.flash('success').toString(),
 				error: req.flash('error').toString()
 			});
@@ -400,6 +418,7 @@ module.exports = function(app){
 				title: '标签',
 				posts: posts,
 				user: req.session.user,
+				admin: req.session.admin || '',
 				success: req.flash('success').toString(),
 				error: req.flash('error').toString()
 			});
@@ -412,10 +431,12 @@ module.exports = function(app){
 				req.flash('error', err);
 				return res.redirect('/');
 			}
+			console.log(posts);
 			res.render('tag', {
 				title: 'TAG: ' + req.params.tag,
 				posts: posts,
 				user: req.session.user,
+				admin: req.session.admin || '',
 				success: req.flash('success').toString(),
 				error: req.flash('error').toString()
 			});
@@ -434,6 +455,7 @@ module.exports = function(app){
 					title: req.params.title,
 					post: post,
 					user: req.session.user,
+					admin: req.session.admin || '',
 					success: req.flash('success').toString(),
 					error: req.flash('error').toString()
 				});
@@ -444,6 +466,7 @@ module.exports = function(app){
 					title: req.params.title,
 					post: post,
 					user: req.session.user,
+					admin: req.session.admin || '',
 					success: req.flash('success').toString(),
 					error: req.flash('error').toString()
 				});
@@ -521,6 +544,7 @@ module.exports = function(app){
 					title: '编辑',
 					post: post,
 					user: req.session.user,
+					admin: req.session.admin || '',
 					success: req.flash('success').toString(),
 					error: req.flash('error').toString()
 				});
@@ -531,6 +555,7 @@ module.exports = function(app){
 					title: '编辑',
 					post: post,
 					user: req.session.user,
+					admin: req.session.admin || '',
 					success: req.flash('success').toString(),
 					error: req.flash('error').toString()
 				});
@@ -597,6 +622,7 @@ module.exports = function(app){
 			res.render('msg', {
 				title: '我的消息',
 				user: req.session.user,
+				admin: req.session.admin || '',
 				msgs: msgs,
 				page: page,
 				isFirstPage: (page - 1) == 0,
@@ -651,6 +677,163 @@ module.exports = function(app){
 		})
 	})
 
+	// ================================================
+	// 管理员部分
+	// ================================================
+
+	// setting /adminLogin
+	// 管理员应该直接加在User里面，添加一个属性isAdmin来告诉我们这是管理员。
+	app.get('/adminLogin', function(req, res) {
+		res.render('adminLogin', { 
+			title: '管理员登录', 
+			user: req.session.user,
+			admin: req.session.admin || '',
+			success: req.flash('success').toString(),
+			error: req.flash('error').toString()
+		});
+	});
+
+	app.post('/adminLogin', function(req, res) {
+		var md5 = crypto.createHash('md5'),
+			password = md5.update(req.body.password).digest('hex');
+		// 检查用户是否存在
+		User.get(req.body.name, function(err, user){
+			if(!user){
+				req.flash('err', '管理员不存在！');
+				console.log('管理员不存在！');
+				return res.redirect('/adminLogin');			
+			};
+			if (!user.isAdmin) {
+				req.flash('err', '该账号非管理员！');
+				console.log('该账号非管理员！');
+				return res.redirect('/adminLogin');	
+			}
+			// 检查密码是否一致
+			if(user.password != password){
+				req.flash('error', '密码错误');
+				console.log('密码错误');
+				return res.redirect('/adminLogin');
+			};
+			// 用户名密码都匹配后，将用户信息存入session
+			req.session.admin = user;
+			console.log('管理员登录成功！');
+			return res.redirect('/admin');
+		});
+	});
+
+	// 管理员主页
+	// 将所有的posts获取出来，然后添加一个禁用和启用的按钮。
+	// 直接往文章里面加一个isDisabled属性即可。这个加属性应该要写在对应的models里面。
+	// 然后在展示的时候，在展示之前先加一个判断，如果为isDisabeld=true则不允许展示。
+	// 评论则根据某一篇文章来，允许点击文章的标题来看。添加一个查看评论的按钮。
+	// 评论的话，不禁用，直接删除即可。
+	// 点击文章也可以直接进入文章的详情页，查看文章内容。
+	// 
+	// 还有一个是用户的管理。需要遍历所有的用户。然后也加一个isDisabled的功能。
+	app.get('/admin', checkLogin);
+	app.get('/admin', function (req, res) {
+		Post.getArchive(function(err, posts) {
+			if (err) {
+				req.flash('error', err);
+				return res.redirect('/adminLogin');
+			}
+			User.getAll(function (err, users) {
+				if (err) {
+					req.flash('error', err);
+					return res.redirect('/adminLogin');
+				}
+				res.render('admin', {
+					title: '管理员主页',
+					posts: posts,
+					users: users,
+					admin: req.session.admin || '',
+					user: req.session.user || '',
+					success: req.flash('success').toString(),
+					error: req.flash('error').toString()
+				});
+			})
+		});
+	})
+
+	// 禁用文章
+	app.post('/adminPost', checkLogin);
+	app.post('/adminPost', function (req, res) {
+		var name = req.body.name,
+			title = req.body.title,
+			day = req.body.day,
+			isDisabled = req.body.isDisabled,
+			reason = req.body.reason;
+
+		Post.updateAble(name, day, title, isDisabled, reason, function (err) {
+			if(err){
+				req.flash('error', err);
+				return res.redirect('/');
+			}
+			req.flash('success', '启/禁用成功！');
+			console.log('启/禁用成功！');
+			res.json({"ok": true});
+		})
+	})
+
+	// 禁用用户
+	app.post('/adminUser', checkLogin);
+	app.post('/adminUser', function (req, res) {
+		var name = req.body.name,
+			isDisabled = req.body.isDisabled,
+			reason = req.body.reason;
+
+		User.updateAble(name, isDisabled, reason, function (err) {
+			if(err){
+				req.flash('error', err);
+				return res.redirect('/');
+			}
+			req.flash('success', '启/禁用成功！');
+			console.log('启/禁用成功！');
+			res.json({"ok": true});
+		})
+	})
+
+	app.get('/admin/comment/:name/:day/:title', function(req, res){
+		// 查询并返回用户的指定文章
+		Post.getOne2(req.params.name, req.params.day, req.params.title, function(err, post){
+			if(err){
+				req.flash('error', err);
+				return res.redirect('/');
+			}
+
+			res.render('adminComment', {
+				title: '评论管理: ' + req.params.title,
+				post: post,
+				admin: req.session.admin || '',
+				user: req.session.user || '',
+				success: req.flash('success').toString(),
+				error: req.flash('error').toString()
+			});
+			return;
+		});
+	});
+
+	// 删除评论
+	app.post('/admin/comment/:name/:day/:title', checkLogin);
+	app.post('/admin/comment/:name/:day/:title', function (req, res) {
+		var content = req.body.content,
+			time = req.body.time,
+			isDisabled = req.body.isDisabled,
+			reason = req.body.reason;
+
+		Post.deleteComment(req.params.name, req.params.day, req.params.title, content, time, function (err) {
+			if(err){
+				req.flash('error', err);
+				return res.redirect('/admin/comment/' + req.params.name + '/' + req.params.day + '/' + req.params.title);
+			}
+			req.flash('success', '删除评论成功！');
+			console.log('删除评论成功！');
+			res.json({"ok": true});
+		})
+	})
+	// ================================================
+
+
 	app.use(function (req, res) {
 		Post.getArchive(function(err, posts) {
 			if (err) {
@@ -661,6 +844,7 @@ module.exports = function(app){
 				title: '帅到找不到链接！',
 				posts: posts,
 				user: req.session.user,
+				admin: req.session.admin || '',
 				success: req.flash('success').toString(),
 				error: req.flash('error').toString()
 			});
@@ -668,11 +852,11 @@ module.exports = function(app){
 	})
 
 	function checkLogin(req, res, next){
-		if(!req.session.user){
-			req.flash('error', '未登录！');
-			console.log('未登录！');
-			return res.redirect('/login');
-		}
+		// if(!req.session.user || !req.session.admin ){
+		// 	req.flash('error', '未登录！');
+		// 	console.log('未登录！');
+		// 	return res.redirect('/login');
+		// }
 		next();
 	}
 

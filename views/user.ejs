@@ -11,8 +11,9 @@
 	<hr />
 	<% } %>
 	<% posts.forEach(function(post, index) { %>
+	<% if (!post.isDisabled){ %>
 	<p><h2><a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a></h2></p>
-	<p class="info">
+	<div class="info post-content">
 		作者: <a href="/u/<%= post.name %>"><%= post.name %><img src="<%= post.head %>" class="r_head"></a>
 		日期: <%= post.time.minute %>
 		标签：
@@ -21,9 +22,10 @@
 				<a href="tags/<%= tag %>" class="tag"><%= tag %></a>
 			<% } %>
 		<% }) %>
-	</p>
+	</div>
 	<p><%- post.post %></p>
 	<p class="info">阅读：<%= post.pv %> | 评论：<%= post.comments.length %></p>
+	<% } %>
 	<% }) %>
 
 	<!-- 回复的弹窗 -->
