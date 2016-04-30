@@ -1,7 +1,7 @@
 var mongodb = require('./db');
-	// markdown = require('markdown').markdown;
+// markdown = require('markdown').markdown;
 
-function Msg(sendFrom, sendTo, time, content){
+function Msg(sendFrom, sendTo, time, content) {
 	this.sendFrom = sendFrom;
 	this.sendTo = sendTo;
 	// 时间由浏览器端生成，然后当作参数传入。
@@ -10,19 +10,7 @@ function Msg(sendFrom, sendTo, time, content){
 	this.content = content;
 }
 
-Msg.prototype.save = function(callback){
-	// 存储各种事件格式，方面以后扩展
-	// var time = {
-	// 	date: date,
-	// 	year: date.getFullYear(),
-	// 	month: date.getFullYear() + '-' + (date.getMonth() + 1),
-	// 	day: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate(),
-	// 	minute: date.getFullYear() 
-	// 			+ '-' + (date.getMonth() + 1) 
-	// 			+ '-' + date.getDate()
-	// 			+ ' ' + date.getHours() 
-	// 			+ ':' + ( date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes())
-	// };
+Msg.prototype.save = function(callback) {
 
 	// 要存入数据库的文档
 	var msg = {
@@ -34,51 +22,51 @@ Msg.prototype.save = function(callback){
 
 	// 打开数据库
 	mongodb.open(function(err, db) {
-		if(err){
+		if (err) {
 			return callback(err);
 		}
 		// 读取posts集合
-		db.collection('msgs', function(err, collection){
-			if(err){
+		db.collection('msgs', function(err, collection) {
+			if (err) {
 				mongodb.close();
 				return callback(err);
 			}
 			// 将文档插入posts集合
 			collection.insert(msg, {
 				safe: true
-			}, function(err){
+			}, function(err) {
 				mongodb.close();
-				if(err){
+				if (err) {
 					return callback(err);
 				}
-				callback(null);  // 返回err为null，也就是正常时候的方法。
+				callback(null); // 返回err为null，也就是正常时候的方法。
 			});
 		});
 	});
 };
 
 // 通过指定接收方来得到所有关于此接收方的消息
-Msg.getAll = function(sendTo, callback){
-	mongodb.open(function(err, db){
-		if(err){
+Msg.getAll = function(sendTo, callback) {
+	mongodb.open(function(err, db) {
+		if (err) {
 			return callback(err);
 		}
 		// 读取msgs集合
-		db.collection('msg', function(err, collection){
-			if(err){
+		db.collection('msg', function(err, collection) {
+			if (err) {
 				mongodb.close();
 				return callback(err);
 			}
 			var query = {};
-			if(sendTo){
+			if (sendTo) {
 				query.sendTo = sendTo;
 			}
 			// 根据query对象查询文章
 			collection.find(query).sort({
 				time: -1
-			}).toArray(function(err, docs){
+			}).toArray(function(err, docs) {
 				mongodb.close();
-				if(err){
+				if (err) {
 					return callback(err); //失败！返回err
 				}
 				// 解析Markdown为html
@@ -92,7 +80,7 @@ Msg.getAll = function(sendTo, callback){
 };
 
 // 通过指定接收方来得到10条关于此接收方的消息
-Msg.getTen = function (sendTo, page, callback) {
+Msg.getTen = function(sendTo, page, callback) {
 	// 打开数据库
 	mongodb.open(function(err, db) {
 		if (err) {
@@ -365,7 +353,7 @@ Msg.getTen = function (sendTo, page, callback) {
 // }
 
 // 通过指定接收方的姓名与消息的发送时间来得到所有关于此接收方的消息
-Msg.remove = function (sendFrom, minute, callback) {
+Msg.remove = function(sendFrom, minute, callback) {
 	// 打开数据库
 	mongodb.open(function(err, db) {
 		if (err) {
@@ -383,7 +371,7 @@ Msg.remove = function (sendFrom, minute, callback) {
 				w: 1
 			}, function(err) {
 				mongodb.close();
-				if(err){
+				if (err) {
 					return callback(err);
 				}
 				callback(null);

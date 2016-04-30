@@ -21,13 +21,13 @@ User.prototype.save = function(callback) {
 	};
 	// 打开数据库
 	mongodb.open(function(err, db) {
-		if(err){
+		if (err) {
 			// 错误，返回err信息
 			return callback(err);
 		};
 		//读取users集合
 		db.collection('users', function(err, collection) {
-			if(err){
+			if (err) {
 				mongodb.close();
 				return callback(err);
 			}
@@ -36,7 +36,7 @@ User.prototype.save = function(callback) {
 				safe: true
 			}, function(err, user) {
 				mongodb.close();
-				if(err){
+				if (err) {
 					return callback(err);
 				}
 				callback(null, user[0]);
@@ -45,7 +45,7 @@ User.prototype.save = function(callback) {
 	});
 };
 
-User.update = function (name, nickname, sex, age, phone, province, city, district, callback) {
+User.update = function(name, nickname, sex, age, phone, province, city, district, callback) {
 	// 打开数据库
 	mongodb.open(function(err, db) {
 		if (err) {
@@ -69,15 +69,15 @@ User.update = function (name, nickname, sex, age, phone, province, city, distric
 					district: district
 				}
 			}, function(err, user) {
-				if(err){
+				if (err) {
 					return callback(err);
 				}
 				// 查找用户名(name键)的值为name一个文档
 				collection.findOne({
 					name: name
-				}, function(err, user){
+				}, function(err, user) {
 					mongodb.close();
-					if(err){
+					if (err) {
 						return callback(err);
 					}
 					callback(null, user);
@@ -87,7 +87,7 @@ User.update = function (name, nickname, sex, age, phone, province, city, distric
 	});
 }
 
-User.updatePwd = function (name, password, callback) {
+User.updatePwd = function(name, password, callback) {
 	// 打开数据库
 	mongodb.open(function(err, db) {
 		if (err) {
@@ -104,14 +104,15 @@ User.updatePwd = function (name, password, callback) {
 				$set: {
 					password: password
 				}
-			}, function(err, user){
+			}, function(err, user) {
 				mongodb.close();
 				// 这里会无缘无故的报错。
 				// { [MongoError: server localhost:27017 sockets closed]
-  				// name: 'MongoError',
-  				// message: 'server localhost:27017 sockets closed' }
-				if(err){
+				// name: 'MongoError',
+				// message: 'server localhost:27017 sockets closed' }
+				if (err) {
 					console.log(err);
+					// hack
 					// 针对name=='MongoError'的错误不做任何处理。
 					if (!err.name == 'MongoError') {
 						return callback(err);
@@ -127,21 +128,21 @@ User.updatePwd = function (name, password, callback) {
 User.get = function(name, callback) {
 	// 打开数据库
 	mongodb.open(function(err, db) {
-		if(err){
+		if (err) {
 			return callback(err);
 		}
 		//读取Users集合
 		db.collection('users', function(err, collection) {
-			if(err){
+			if (err) {
 				mongodb.close();
 				return callback(err);
 			}
 			// 查找用户名(name键)的值为name一个文档
 			collection.findOne({
 				name: name
-			}, function(err, user){
+			}, function(err, user) {
 				mongodb.close();
-				if(err){
+				if (err) {
 					return callback(err);
 				}
 				callback(null, user);
@@ -151,7 +152,7 @@ User.get = function(name, callback) {
 }
 
 // 返回所有用户信息
-User.getAll = function (callback) {
+User.getAll = function(callback) {
 	// 打开数据库
 	mongodb.open(function(err, db) {
 		if (err) {
@@ -187,7 +188,7 @@ User.getAll = function (callback) {
 	});
 }
 
-User.updateAble = function (name, isDisabled, reason, callback) {
+User.updateAble = function(name, isDisabled, reason, callback) {
 	// 打开数据库
 	mongodb.open(function(err, db) {
 		if (err) {
@@ -207,7 +208,7 @@ User.updateAble = function (name, isDisabled, reason, callback) {
 				}
 			}, function(err) {
 				mongodb.close();
-				if(err){
+				if (err) {
 					return callback(err);
 				}
 				callback(null);
